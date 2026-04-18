@@ -43,7 +43,7 @@ const UI = {
             setTimeout(() => {
                 splash.classList.add('fade-out');
                 setTimeout(() => splash.remove(), 500);
-            }, 1500);
+            }, 3000);
         }
     },
 
