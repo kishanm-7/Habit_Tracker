@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORGE | Build the person you intend to become</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-dark">
+    <!-- Noise Overlay -->
+    <div class="noise-overlay"></div>
+
+    <div class="app-container">
+        <!-- Main Content Area -->
+        <main id="main-content">
+            <!-- Views will be injected/toggled here depending on the active tab -->
+            
+            <!-- Dashboard View -->
+            <section id="view-today" class="view active">
+                <header class="dashboard-header">
+                    <p class="current-date" id="header-date">Today</p>
+                    <h1 class="greeting">Good morning, <span class="accent">warrior.</span></h1>
+                    <div class="header-streak">
+                        <span class="flame-icon">🔥</span>
+                        <span id="global-streak">0</span> Day Streak
+                    </div>
+                </header>
+
+                <div class="completion-ring-container">
+                    <svg class="progress-ring" width="160" height="160">
+                        <circle class="progress-ring__circle-bg" stroke="var(--border-color)" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+                        <circle id="daily-progress-ring" class="progress-ring__circle" stroke="var(--accent-primary)" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+                    </svg>
+                    <div class="ring-content">
+                        <h2 id="progress-percent">0%</h2>
+                        <p>Completed</p>
+                    </div>
+                </div>
+
+                <div class="daily-quote-box">
+                    <p id="daily-quote">"We are what we repeatedly do. Excellence, then, is not an act, but a habit."</p>
+                </div>
+
+                <div class="habits-section">
+                    <div class="section-header">
+                        <h2>Your Routine</h2>
+                        <button id="btn-add-habit" class="btn-text">+ New Habit</button>
+                    </div>
+                    <div id="habit-list" class="habit-list">
+                        <!-- Habit cards injected here via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats View -->
+            <section id="view-stats" class="view">
+                <header class="section-header">
+                    <h1>Progress</h1>
+                </header>
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <h3>Consistency</h3>
+                        <p id="stat-consistency" class="stat-value">0%</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Best Streak</h3>
+                        <p id="stat-best-streak" class="stat-value">0 <span class="small-text">days</span></p>
+                    </div>
+                </div>
+                <div class="stats-panel">
+                    <h3>Weekly Overview</h3>
+                    <div id="heatmap-grid" class="heatmap-grid">
+                        <!-- Heatmap generated JS -->
+                    </div>
+                </div>
+                <div class="stats-panel" id="weak-day-panel">
+                    <h3>Insights</h3>
+                    <p id="stat-insight" class="insight-text">Keep building data for insights.</p>
+                </div>
+            </section>
+
+            <!-- Timer View -->
+            <section id="view-timer" class="view">
+                <header class="section-header">
+                    <h1>Focus Session</h1>
+                </header>
+                <div class="timer-container">
+                    <div class="timer-display">
+                        <svg class="timer-ring" width="280" height="280">
+                            <circle class="timer-ring__bg" stroke="var(--border-color)" stroke-width="8" fill="transparent" r="130" cx="140" cy="140"/>
+                            <circle id="active-timer-ring" class="timer-ring__circle" stroke="var(--accent-primary)" stroke-width="8" fill="transparent" r="130" cx="140" cy="140"/>
+                        </svg>
+                        <div class="timer-text">
+                            <h1 id="time-left">25:00</h1>
+                            <p id="timer-mode">Focus</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timer-controls">
+                        <button id="btn-timer-toggle" class="btn-primary">Start Focus</button>
+                        <button id="btn-timer-reset" class="btn-secondary">Reset</button>
+                    </div>
+                    <div class="timer-settings">
+                        <label for="timer-task-select">Link to habit:</label>
+                        <select id="timer-task-select" class="custom-select">
+                            <option value="">None</option>
+                            <!-- Habit options filled via JS -->
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="view-settings" class="view">
+                <header class="section-header">
+                    <h1>Settings</h1>
+                </header>
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h3>Reminder Time</h3>
+                            <p>Daily notification</p>
+                        </div>
+                        <input type="time" id="reminder-time" class="time-input">
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h3>Sound/Vibration</h3>
+                            <p>For focus timer</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-sound" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-group danger-zone">
+                        <h3>Danger Zone</h3>
+                        <button id="btn-reset-data" class="btn-destructive">Reset All Data</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-target="view-today">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Today</span>
+            </button>
+            <button class="nav-item" data-target="view-stats">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                <span>Stats</span>
+            </button>
+            <button class="nav-item" data-target="view-timer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>Timer</span>
+            </button>
+            <button class="nav-item" data-target="view-settings">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>Settings</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-backdrop" class="modal-backdrop"></div>
+    <div id="modal-add-habit" class="modal">
+        <div class="modal-header">
+            <h2>New Habit</h2>
+            <button id="btn-close-modal" class="btn-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <form id="form-add-habit" class="modal-body">
+            <div class="form-group">
+                <label for="habit-name">Habit Name</label>
+                <input type="text" id="habit-name" placeholder="e.g. Read 20 pages" required>
+            </div>
+            <div class="form-group row">
+                <div class="col">
+                    <label for="habit-emoji">Emoji</label>
+                    <input type="text" id="habit-emoji" class="emoji-picker" value="🎯" maxlength="2" required>
+                </div>
+                <div class="col">
+                    <label for="habit-category">Category</label>
+                    <select id="habit-category" class="custom-select" required>
+                        <option value="Health">Health</option>
+                        <option value="Mind">Mind</option>
+                        <option value="Fitness">Fitness</option>
+                        <option value="Growth">Growth</option>
+                        <option value="Work">Work</option>
+                        <option value="Digital Detox">Digital Detox</option>
+                        <option value="Recovery">Recovery</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary full-width mt-4">Create Habit</button>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/store.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
