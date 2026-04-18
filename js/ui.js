@@ -223,13 +223,28 @@ const UI = {
                 completions: Store.getCompletions(),
                 settings: Store.getSettings()
             };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `forge-backup-${Store.getTodayStr()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+            const jsonStr = JSON.stringify(data, null, 2);
+            
+            // Try standard download attempt automatically
+            try {
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `forge-backup-${Store.getTodayStr()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            } catch (err) {
+                console.error("Automatic blob download failed", err);
+            }
+
+            // Always display fallback modal to guarantee mobile capability
+            this.showExportFallbackModal(jsonStr);
         });
 
         this.btnResetData.addEventListener('click', () => {
@@ -656,6 +671,47 @@ const UI = {
         });
         
         streakContainer.innerHTML = streakHtml;
+    },
+
+    showExportFallbackModal(jsonStr) {
+        let exportModal = document.getElementById('modal-export-fallback');
+        if (!exportModal) {
+            exportModal = document.createElement('div');
+            exportModal.id = 'modal-export-fallback';
+            exportModal.className = 'modal';
+            exportModal.innerHTML = `
+                <div class="modal-body" style="text-align: center; max-height: 80vh; display: flex; flex-direction: column;">
+                    <div class="modal-header">
+                        <h2>Export Data</h2>
+                        <button id="btn-close-export" class="btn-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
+                    <p class="small-text" style="margin-bottom: 16px;">If your device blocked the automatic download, manually copy your raw ecosystem structure here:</p>
+                    <textarea id="export-json-content" class="custom-textarea" style="flex: 1; min-height: 200px; font-family: monospace; font-size: 12px; margin-bottom: 16px;" readonly></textarea>
+                    <button id="btn-copy-export" class="btn-primary full-width">Copy to Clipboard</button>
+                </div>
+            `;
+            document.body.appendChild(exportModal);
+
+            document.getElementById('btn-close-export').addEventListener('click', () => {
+                exportModal.classList.remove('active');
+                document.getElementById('modal-backdrop').classList.remove('active');
+            });
+
+            document.getElementById('btn-copy-export').addEventListener('click', () => {
+                const ta = document.getElementById('export-json-content');
+                ta.select();
+                document.execCommand('copy');
+                const btn = document.getElementById('btn-copy-export');
+                btn.textContent = 'Copied Successfully!';
+                setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+            });
+        }
+        
+        document.getElementById('export-json-content').value = jsonStr;
+        document.getElementById('modal-backdrop').classList.add('active');
+        exportModal.classList.add('active');
     }
 
 };
