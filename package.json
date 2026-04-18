@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rmdir /S /Q www & mkdir www & copy index.html www && xcopy css www\\css\\ /E /I /Y && xcopy js www\\js\\ /E /I /Y",
+    "build": "cross-env rimraf www && copyfiles index.html \"css/**/*\" \"js/**/*\" \"public/**/*\" www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +24,9 @@
     "@capacitor/core": "^8.3.1"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.3.1"
+    "@capacitor/cli": "^8.3.1",
+    "copyfiles": "^2.4.1",
+    "cross-env": "^10.1.0",
+    "rimraf": "^6.1.3"
   }
 }
