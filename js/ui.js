@@ -102,6 +102,12 @@ const UI = {
             document.querySelectorAll('.modal').forEach(m => this.closeModal(m));
         });
 
+        // Bug 2: Mobile explicit tracking for select update
+        const categorySelect = document.getElementById('habit-category');
+        categorySelect.addEventListener('change', (e) => {
+            categorySelect.value = e.target.value;
+        });
+
         // Add Habit Form
         this.formAddHabit.addEventListener('submit', (e) => {
             e.preventDefault();
