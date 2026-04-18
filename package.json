@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cross-env rimraf www && copyfiles index.html \"css/**/*\" \"js/**/*\" \"public/**/*\" www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
