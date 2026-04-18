@@ -42,8 +42,8 @@ const UI = {
         if (splash) {
             setTimeout(() => {
                 splash.classList.add('fade-out');
-                setTimeout(() => splash.remove(), 500);
-            }, 3000);
+                setTimeout(() => splash.remove(), 800);
+            }, 6200);
         }
     },
 
