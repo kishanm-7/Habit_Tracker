@@ -1422,3 +1422,25 @@ input:checked + .slider:before {
 @keyframes lineDraw {
     to { width: 100%; }
 }
+
+/* Splash Screen Mobile Responsiveness */
+@media (max-width: 768px) {
+    .forge-text-container {
+        font-size: 12vw;
+        letter-spacing: 8px;
+        gap: 8px;
+        margin-right: -8px;
+        justify-content: center;
+        width: 100%;
+        text-align: center;
+    }
+
+    .forge-tagline {
+        font-size: 11px;
+        letter-spacing: 2px;
+        padding: 0 20px;
+        box-sizing: border-box;
+        text-align: center;
+        width: 100%;
+    }
+}
