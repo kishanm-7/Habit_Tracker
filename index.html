@@ -24,7 +24,7 @@
             
             <!-- Dashboard View -->
             <section id="view-today" class="view active">
-                <header class="dashboard-header">
+                <header class="dashboard-header anim-enter delay-0">
                     <p class="current-date" id="header-date">Today</p>
                     <h1 class="greeting">Good morning, <span class="accent">warrior.</span></h1>
                     <div class="header-streak">
@@ -33,18 +33,28 @@
                     </div>
                 </header>
 
-                <div class="completion-ring-container">
-                    <svg class="progress-ring" width="160" height="160">
-                        <circle class="progress-ring__circle-bg" stroke="var(--border-color)" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
-                        <circle id="daily-progress-ring" class="progress-ring__circle" stroke="var(--accent-primary)" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+                <div class="completion-ring-container anim-enter-scale delay-150">
+                    <div class="glow-ring"></div>
+                    <svg class="progress-ring" width="220" height="220">
+                        <defs>
+                            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="var(--accent-secondary)"/>
+                                <stop offset="100%" stop-color="var(--accent-primary)"/>
+                            </linearGradient>
+                        </defs>
+                        <circle class="progress-ring__circle-bg" stroke="var(--border-color)" stroke-width="12" fill="transparent" r="100" cx="110" cy="110"/>
+                        <circle id="daily-progress-ring" class="progress-ring__circle" stroke="url(#ringGradient)" stroke-width="12" fill="transparent" r="100" cx="110" cy="110" stroke-linecap="round"/>
                     </svg>
                     <div class="ring-content">
                         <h2 id="progress-percent">0%</h2>
                         <p>Completed</p>
+                        <p id="progress-fraction" class="small-text mt-1">0 of 0 habits done</p>
                     </div>
                 </div>
 
-                <div class="daily-quote-box">
+                <div id="mini-heatmap" class="mini-heatmap-container anim-enter delay-300"></div>
+
+                <div class="daily-quote-box anim-enter delay-300">
                     <p id="daily-quote">"We are what we repeatedly do. Excellence, then, is not an act, but a habit."</p>
                 </div>
 
@@ -203,6 +213,15 @@
             </div>
             <button type="submit" class="btn-primary full-width mt-4">Create Habit</button>
         </form>
+    </div>
+
+    <!-- Celebration Overlay -->
+    <div id="celebration-overlay" class="celebration-backdrop">
+        <div class="celebration-content">
+            <h1 id="celebration-title" class="celebration-title">7-Day Streak.</h1>
+            <p class="celebration-subtitle">Consistency is identity.</p>
+        </div>
+        <div id="sparkler-container" class="sparkler-container"></div>
     </div>
 
     <!-- Scripts -->

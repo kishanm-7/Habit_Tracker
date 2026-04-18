@@ -45,6 +45,8 @@ const UI = {
         this.globalStreak = document.getElementById('global-streak');
         this.progressRing = document.getElementById('daily-progress-ring');
         this.progressPercent = document.getElementById('progress-percent');
+        this.progressFraction = document.getElementById('progress-fraction');
+        this.miniHeatmap = document.getElementById('mini-heatmap');
         this.dailyQuote = document.getElementById('daily-quote');
         this.views = document.querySelectorAll('.view');
         this.navItems = document.querySelectorAll('.nav-item');
@@ -174,14 +176,15 @@ const UI = {
         this.habitList.innerHTML = '';
         let completedCount = 0;
 
-        habits.forEach(habit => {
+        habits.forEach((habit, index) => {
             const isCompleted = Store.isCompleted(habit.id, todayStr);
             if (isCompleted) completedCount++;
 
             const tagClass = this.getTagClass(habit.category);
+            const delay = 380 + (index * 80);
 
             const html = `
-                <div class="habit-card cat-${tagClass} ${isCompleted ? 'completed' : ''}" data-id="${habit.id}">
+                <div class="habit-card cat-${tagClass} ${isCompleted ? 'completed' : ''} anim-enter" style="animation-delay: ${delay}ms" data-id="${habit.id}">
                     <div class="habit-icon">${habit.emoji}</div>
                     <div class="habit-details">
                         <div class="habit-name">${habit.name}</div>
@@ -202,6 +205,32 @@ const UI = {
         });
 
         this.updateProgressRing(completedCount, habits.length);
+        this.renderMiniHeatmap(habits);
+    },
+
+    renderMiniHeatmap(habits) {
+        const daysNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+        const d = new Date();
+        const currentDay = d.getDay() === 0 ? 7 : d.getDay(); // 1=Mon...7=Sun
+        
+        let heatmapHtml = '';
+        for(let i=1; i<=7; i++) {
+            const diff = i - currentDay;
+            const dateStr = Store.getDateStr(diff);
+            
+            const doneCount = habits.filter(h => Store.isCompleted(h.id, dateStr)).length;
+            const opacity = habits.length > 0 ? (doneCount / habits.length).toFixed(2) : 0;
+            const isToday = (diff === 0);
+            
+            heatmapHtml += `
+            <div class="mini-day">
+                <div class="mini-square ${isToday ? 'today' : ''}">
+                    <div class="mini-square-fill" style="opacity: ${opacity}"></div>
+                </div>
+                <span class="mini-label">${daysNames[i-1]}</span>
+            </div>`;
+        }
+        this.miniHeatmap.innerHTML = heatmapHtml;
     },
 
     generateHistoryHtml(habitId) {
@@ -221,9 +250,10 @@ const UI = {
     updateProgressRing(completed, total) {
         const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
         this.progressPercent.textContent = percent + '%';
+        this.progressFraction.textContent = `${completed} of ${total} habits done`;
         
-        // Circumference = 2 * Math.PI * r = 2 * Math.PI * 70 = 439.8
-        const circumference = 439.8;
+        // Circumference = 2 * Math.PI * r = 2 * Math.PI * 100 = 628.318
+        const circumference = 628.318;
         this.progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
         const offset = circumference - (percent / 100) * circumference;
         this.progressRing.style.strokeDashoffset = offset;
@@ -231,13 +261,32 @@ const UI = {
 
     handleHabitCheck(id, cardNode, btnNode) {
         const todayStr = Store.getTodayStr();
+        
+        // Find habit to check streak before
+        let habits = Store.getHabits();
+        let targetHabit = habits.find(h => h.id === id);
+        const streakBefore = targetHabit ? targetHabit.streak : 0;
+
         const isNowCompleted = Store.toggleCompletion(id, todayStr);
         
+        // Get streak after
+        habits = Store.getHabits();
+        targetHabit = habits.find(h => h.id === id);
+        const streakAfter = targetHabit ? targetHabit.streak : 0;
+
         if (isNowCompleted) {
             // Add animations
             cardNode.classList.add('completed', 'anim-glow');
             setTimeout(() => cardNode.classList.remove('anim-glow'), 500);
             this.spawnConfetti(btnNode);
+            
+            // Check Milestones
+            if (streakAfter > streakBefore) {
+                const milestones = [3, 7, 14, 30];
+                if (milestones.includes(streakAfter)) {
+                    this.triggerCelebration(streakAfter);
+                }
+            }
         } else {
             cardNode.classList.remove('completed');
         }
@@ -245,6 +294,33 @@ const UI = {
         // Re-render dashboard partly
         this.renderDashboard(); 
         // We re-render entirely to update ring and streaks easily. In production, partial DOM update is better.
+    },
+
+    triggerCelebration(days) {
+        const overlay = document.getElementById('celebration-overlay');
+        const title = document.getElementById('celebration-title');
+        const sparklerContainer = document.getElementById('sparkler-container');
+        
+        if (!overlay) return;
+        
+        title.textContent = `${days}-Day Streak.`;
+        overlay.classList.add('active');
+        sparklerContainer.innerHTML = '';
+        
+        for(let i=0; i<20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'sparkle-line';
+            particle.style.left = (10 + Math.random() * 80) + '%';
+            const h = 50 + Math.random() * 150;
+            particle.style.height = h + 'px';
+            particle.style.animationDelay = (Math.random() * 0.3) + 's';
+            particle.style.animationDuration = (1.2 + Math.random() * 0.6) + 's';
+            sparklerContainer.appendChild(particle);
+        }
+        
+        setTimeout(() => {
+            overlay.classList.remove('active');
+        }, 2500);
     },
 
     spawnConfetti(targetNode) {
