@@ -1461,3 +1461,14 @@ input:checked + .slider:before {
         width: 100%;
     }
 }
+
+/* Header Text Logo */
+.forge-text-logo {
+    font-family: 'Syne', Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #F5A623;
+    letter-spacing: 6px;
+    text-decoration: none;
+    margin-right: -6px; /* Offset to center correctly due to letter-spacing */
+}
