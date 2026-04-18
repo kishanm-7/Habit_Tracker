@@ -1332,13 +1332,13 @@ input:checked + .slider:before {
 }
 
 .forge-ignition {
-    position: relative;
+    position: absolute; /* Detach from flex flow to preserve true text center */
     width: 100px;
     height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
+    z-index: 0;
 }
 
 .spark {
@@ -1380,13 +1380,13 @@ input:checked + .slider:before {
     font-size: 3rem;
     opacity: 0;
     transform-origin: bottom right;
-    transform: rotate(45deg) translateY(-30px);
+    transform: rotate(45deg);
     animation: hammerDown 0.6s cubic-bezier(0.5, 0, 0.1, 1) forwards;
     animation-delay: 0.8s;
 }
 
 @keyframes hammerDown {
-    0% { opacity: 1; transform: rotate(45deg) translateY(-40px); }
+    0% { opacity: 1; transform: rotate(45deg) translateY(-10px); }
     80% { opacity: 1; transform: rotate(-15deg) translateY(0); }
     100% { opacity: 0; transform: rotate(-10deg) translateY(0); }
 }
@@ -1400,11 +1400,12 @@ input:checked + .slider:before {
     color: #F5A623;
     letter-spacing: 16px;
     margin-right: -16px; /* Offset letter spacing on last letter */
+    z-index: 1; 
 }
 
 .forge-letter {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px); /* Subtle shift only */
     animation: letterRise 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
 }
 
