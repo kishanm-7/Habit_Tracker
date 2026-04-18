@@ -10,14 +10,28 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap" rel="stylesheet">
     
+    <!-- PWA & Favicon -->
+    <link rel="icon" href="public/favicon.ico">
+    <link rel="apple-touch-icon" href="public/icon-192.png">
+    <link rel="manifest" href="public/manifest.json">
+    
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="theme-dark">
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <img src="public/forge-logo.png" alt="FORGE Logo" style="height: 120px; background: #0D0D0F;">
+    </div>
     <!-- Noise Overlay -->
     <div class="noise-overlay"></div>
 
     <div class="app-container">
+        <!-- Global Header -->
+        <header class="app-top-nav" style="padding: 16px 24px 0 24px; text-align: left; background: var(--bg-base);">
+            <img src="public/forge-logo.png" alt="FORGE" style="height: 40px; background: #0D0D0F;">
+        </header>
+
         <!-- Main Content Area -->
         <main id="main-content">
             <!-- Views will be injected/toggled here depending on the active tab -->
@@ -72,7 +86,7 @@
             <!-- Stats View -->
             <section id="view-stats" class="view">
                 <header class="section-header">
-                    <h1>Progress</h1>
+                    <h1>Performance</h1>
                 </header>
                 <div class="stats-cards">
                     <div class="stat-card">
@@ -80,19 +94,23 @@
                         <p id="stat-consistency" class="stat-value">0%</p>
                     </div>
                     <div class="stat-card">
-                        <h3>Best Streak</h3>
-                        <p id="stat-best-streak" class="stat-value">0 <span class="small-text">days</span></p>
+                        <h3>Weakest Day</h3>
+                        <p id="stat-weakest-day" class="stat-value-text">N/A</p>
                     </div>
                 </div>
+                
                 <div class="stats-panel">
-                    <h3>Weekly Overview</h3>
-                    <div id="heatmap-grid" class="heatmap-grid">
-                        <!-- Heatmap generated JS -->
+                    <h3>14-Day Completion</h3>
+                    <div id="bar-chart-14" class="css-bar-chart">
+                        <!-- Bars dynamically injected -->
                     </div>
                 </div>
-                <div class="stats-panel" id="weak-day-panel">
-                    <h3>Insights</h3>
-                    <p id="stat-insight" class="insight-text">Keep building data for insights.</p>
+                
+                <div class="stats-panel">
+                    <h3>Best Streaks</h3>
+                    <div id="streak-bars-container" class="streak-bars">
+                        <!-- Horizontal bars injected -->
+                    </div>
                 </div>
             </section>
 
@@ -117,7 +135,21 @@
                         <button id="btn-timer-toggle" class="btn-primary">Start Focus</button>
                         <button id="btn-timer-reset" class="btn-secondary">Reset</button>
                     </div>
-                    <div class="timer-settings">
+                    <div class="timer-settings" style="margin-top: var(--space-4);">
+                        <div class="timer-durations" style="display: flex; gap: var(--space-2); margin-bottom: var(--space-3); text-align: center;">
+                            <div style="flex: 1;">
+                                <label for="input-work" style="display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Work</label>
+                                <input type="number" id="input-work" class="timer-input" min="1" max="90" value="25">
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="input-break" style="display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Break</label>
+                                <input type="number" id="input-break" class="timer-input" min="1" max="30" value="5">
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="input-long-break" style="display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Long Brk</label>
+                                <input type="number" id="input-long-break" class="timer-input" min="1" max="45" value="15">
+                            </div>
+                        </div>
                         <label for="timer-task-select">Link to habit:</label>
                         <select id="timer-task-select" class="custom-select">
                             <option value="">None</option>
@@ -142,17 +174,26 @@
                     </div>
                     <div class="setting-item">
                         <div class="setting-info">
-                            <h3>Sound/Vibration</h3>
-                            <p>For focus timer</p>
+                            <h3>Dark Mode</h3>
+                            <p>Premium dark aesthetic</p>
                         </div>
                         <label class="toggle-switch">
-                            <input type="checkbox" id="toggle-sound" checked>
+                            <input type="checkbox" id="toggle-theme" checked>
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="setting-group danger-zone">
-                        <h3>Danger Zone</h3>
-                        <button id="btn-reset-data" class="btn-destructive">Reset All Data</button>
+                    
+                    <div class="setting-group mt-4">
+                        <h3 class="mb-2" style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Manage Habits</h3>
+                        <div id="settings-habit-list" class="settings-habit-list">
+                            <!-- Habits dynamically injected for editing -->
+                        </div>
+                    </div>
+
+                    <div class="setting-group danger-zone mt-4">
+                        <h3 class="mb-2" style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Data Management</h3>
+                        <button id="btn-export-data" class="btn-secondary full-width mb-2" style="background: transparent; border: 1px solid var(--border-color);">Export Data (.json)</button>
+                        <button id="btn-reset-data" class="btn-destructive full-width">Reset All Data</button>
                     </div>
                 </div>
             </section>
@@ -189,6 +230,7 @@
             </button>
         </div>
         <form id="form-add-habit" class="modal-body">
+            <input type="hidden" id="habit-id" value="">
             <div class="form-group">
                 <label for="habit-name">Habit Name</label>
                 <input type="text" id="habit-name" placeholder="e.g. Read 20 pages" required>
@@ -211,8 +253,29 @@
                     </select>
                 </div>
             </div>
+            <div class="form-group mt-3">
+                <label for="habit-notes">Notes (optional)</label>
+                <textarea id="habit-notes" class="custom-textarea" rows="2" placeholder="e.g. Remember to track this right after lunch."></textarea>
+            </div>
             <button type="submit" class="btn-primary full-width mt-4">Create Habit</button>
         </form>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="modal-delete" class="modal">
+        <div class="modal-body" style="text-align: center;">
+            <div class="habit-icon" style="margin: 0 auto 16px auto; background: rgba(192, 57, 43, 0.1); color: var(--status-danger);">🗑️</div>
+            <h2 id="delete-prompt-name" style="margin-bottom: 8px;">Delete Habit?</h2>
+            <p class="small-text" style="margin-bottom: 24px;">This will erase all its history. This action cannot be undone.</p>
+            <div class="form-group row">
+                <div class="col">
+                    <button id="btn-cancel-delete" class="btn-secondary full-width">Cancel</button>
+                </div>
+                <div class="col">
+                    <button id="btn-confirm-delete" class="btn-destructive full-width">Delete</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Celebration Overlay -->

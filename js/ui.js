@@ -37,6 +37,14 @@ const UI = {
         this.cacheDOM();
         this.bindEvents();
         this.renderDashboard();
+        
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            setTimeout(() => {
+                splash.classList.add('fade-out');
+                setTimeout(() => splash.remove(), 500);
+            }, 1500);
+        }
     },
 
     cacheDOM() {
@@ -63,6 +71,15 @@ const UI = {
         this.statInsight = document.getElementById('stat-insight');
         
         this.btnResetData = document.getElementById('btn-reset-data');
+        this.btnExportData = document.getElementById('btn-export-data');
+        this.toggleTheme = document.getElementById('toggle-theme');
+        this.inputReminder = document.getElementById('reminder-time');
+        this.settingsHabitList = document.getElementById('settings-habit-list');
+
+        this.modalDelete = document.getElementById('modal-delete');
+        this.btnCancelDelete = document.getElementById('btn-cancel-delete');
+        this.btnConfirmDelete = document.getElementById('btn-confirm-delete');
+        this.habitIdInput = document.getElementById('habit-id');
     },
 
     bindEvents() {
@@ -85,22 +102,87 @@ const UI = {
             document.querySelectorAll('.modal').forEach(m => this.closeModal(m));
         });
 
-        // Add Habit
+        // Add Habit Form
         this.formAddHabit.addEventListener('submit', (e) => {
             e.preventDefault();
-            const name = document.getElementById('habit-name').value;
-            const emoji = document.getElementById('habit-emoji').value;
-            const category = document.getElementById('habit-category').value;
+            const habitId = this.habitIdInput.value;
+            const habitData = {
+                name: document.getElementById('habit-name').value,
+                emoji: document.getElementById('habit-emoji').value,
+                category: document.getElementById('habit-category').value,
+                notes: document.getElementById('habit-notes').value,
+                frequency: 'daily'
+            };
+
+            if (habitId) {
+                habitData.id = habitId;
+                Store.updateHabit(habitData);
+            } else {
+                Store.addHabit(habitData);
+            }
             
-            Store.addHabit({ name, emoji, category, frequency: 'daily' });
             this.closeModal(this.modalAddHabit);
             this.formAddHabit.reset();
+            this.habitIdInput.value = '';
             document.getElementById('habit-emoji').value = '🎯';
+            document.querySelector('#form-add-habit button[type="submit"]').textContent = 'Create Habit';
             this.renderDashboard();
+            this.renderStats();
+        });
+
+        // Initialize Add Default
+        this.btnAddHabit.addEventListener('click', () => {
+            this.formAddHabit.reset();
+            this.habitIdInput.value = '';
+            document.querySelector('#form-add-habit button[type="submit"]').textContent = 'Create Habit';
+            this.openModal(this.modalAddHabit);
+        });
+
+        // Delete Confirm
+        this.btnCancelDelete.addEventListener('click', () => this.closeModal(this.modalDelete));
+        this.btnConfirmDelete.addEventListener('click', () => {
+            if (this.currentDeleteId) {
+                Store.deleteHabit(this.currentDeleteId);
+                this.closeModal(this.modalDelete);
+                this.currentDeleteId = null;
+                this.renderDashboard();
+                this.renderStats();
+            }
         });
 
         // Habit Clicks (Delegation)
         this.habitList.addEventListener('click', (e) => {
+            const editItem = e.target.closest('.edit-habit');
+            if (editItem) {
+                e.stopPropagation();
+                const id = editItem.dataset.id;
+                this.openEditModal(id);
+                document.querySelectorAll('.dropdown-menu.active').forEach(d => d.classList.remove('active'));
+                return;
+            }
+
+            const deleteItem = e.target.closest('.delete-habit');
+            if (deleteItem) {
+                e.stopPropagation();
+                const id = deleteItem.dataset.id;
+                this.openDeleteModal(id);
+                document.querySelectorAll('.dropdown-menu.active').forEach(d => d.classList.remove('active'));
+                return;
+            }
+
+            // Dropdown Menu
+            const menuBtn = e.target.closest('.habit-menu-btn');
+            if (menuBtn) {
+                e.stopPropagation();
+                const dropdown = menuBtn.querySelector('.dropdown-menu');
+                document.querySelectorAll('.dropdown-menu.active').forEach(d => {
+                    if(d !== dropdown) d.classList.remove('active');
+                });
+                dropdown.classList.toggle('active');
+                return;
+            }
+
+            // Checkmark
             const btn = e.target.closest('.btn-check');
             if (btn) {
                 const card = btn.closest('.habit-card');
@@ -109,10 +191,62 @@ const UI = {
             }
         });
 
-        // Settings
+        // Global dismiss dropdowns
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu.active').forEach(d => d.classList.remove('active'));
+        });
+
+        // Settings Inputs
+        this.toggleTheme.addEventListener('change', (e) => {
+            const isLight = !e.target.checked; // If checked, it's dark
+            if (isLight) {
+                document.body.classList.add('theme-light');
+                document.body.classList.remove('theme-dark');
+            } else {
+                document.body.classList.remove('theme-light');
+                document.body.classList.add('theme-dark');
+            }
+            const settings = Store.getSettings();
+            settings.theme = isLight ? 'light' : 'dark';
+            Store.setSettings(settings);
+        });
+
+        this.inputReminder.addEventListener('change', (e) => {
+            const settings = Store.getSettings();
+            settings.reminderTime = e.target.value;
+            Store.setSettings(settings);
+        });
+
+        this.btnExportData.addEventListener('click', () => {
+            const data = {
+                habits: Store.getHabits(),
+                completions: Store.getCompletions(),
+                settings: Store.getSettings()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `forge-backup-${Store.getTodayStr()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
         this.btnResetData.addEventListener('click', () => {
             if(confirm("Are you sure? This will wipe all habits, streaks, and settings.")) {
                 Store.clearAllData();
+            }
+        });
+
+        // Settings Dropdown/Action Routing Context
+        this.settingsHabitList.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.edit-habit-btn');
+            if (editBtn) {
+                this.openEditModal(editBtn.dataset.id);
+            }
+            const deleteBtn = e.target.closest('.delete-habit-btn');
+            if (deleteBtn) {
+                this.openDeleteModal(deleteBtn.dataset.id);
             }
         });
     },
@@ -123,6 +257,7 @@ const UI = {
         
         if (viewId === 'view-today') this.renderDashboard();
         if (viewId === 'view-stats') this.renderStats();
+        if (viewId === 'view-settings') this.renderSettings();
         if (viewId === 'view-timer') {
             if (typeof Timer !== 'undefined') Timer.renderOptions();
         }
@@ -135,7 +270,69 @@ const UI = {
 
     closeModal(modal) {
         this.modalBackdrop.classList.remove('active');
-        modal.classList.remove('active');
+        if (modal) modal.classList.remove('active');
+    },
+
+    openEditModal(id) {
+        const habits = Store.getHabits();
+        const habit = habits.find(h => h.id === id);
+        if(!habit) return;
+
+        this.habitIdInput.value = habit.id;
+        document.getElementById('habit-name').value = habit.name;
+        document.getElementById('habit-emoji').value = habit.emoji;
+        document.getElementById('habit-category').value = habit.category;
+        document.getElementById('habit-notes').value = habit.notes || '';
+        
+        document.querySelector('#form-add-habit button[type="submit"]').textContent = 'Save Changes';
+        this.openModal(this.modalAddHabit);
+    },
+
+    openDeleteModal(id) {
+        const habits = Store.getHabits();
+        const habit = habits.find(h => h.id === id);
+        if(!habit) return;
+
+        this.currentDeleteId = id;
+        document.getElementById('delete-prompt-name').textContent = `Delete ${habit.name}?`;
+        this.openModal(this.modalDelete);
+    },
+
+    renderSettings() {
+        const settings = Store.getSettings();
+        this.inputReminder.value = settings.reminderTime || '08:00';
+        
+        if (settings.theme === 'light') {
+            this.toggleTheme.checked = false;
+            document.body.classList.add('theme-light');
+            document.body.classList.remove('theme-dark');
+        } else {
+            this.toggleTheme.checked = true;
+            document.body.classList.add('theme-dark');
+            document.body.classList.remove('theme-light');
+        }
+
+        const habits = Store.getHabits();
+        if (habits.length === 0) {
+            this.settingsHabitList.innerHTML = '<p class="small-text">No habits tracked.</p>';
+            return;
+        }
+
+        let html = '';
+        habits.forEach(habit => {
+            html += `
+            <div class="settings-habit-item">
+                <div class="habit-info">
+                    <span>${habit.emoji}</span>
+                    <span>${habit.name}</span>
+                </div>
+                <div class="habit-actions">
+                    <button class="btn-icon edit-habit-btn" data-id="${habit.id}">✏️</button>
+                    <button class="btn-icon danger delete-habit-btn" data-id="${habit.id}">🗑️</button>
+                </div>
+            </div>`;
+        });
+        this.settingsHabitList.innerHTML = html;
     },
 
     getTagClass(category) {
@@ -183,6 +380,24 @@ const UI = {
             const tagClass = this.getTagClass(habit.category);
             const delay = 380 + (index * 80);
 
+            const isCustom = !['1','2','3','4','5','6'].includes(habit.id.toString());
+            let menuHtml = '';
+            if (isCustom) {
+                menuHtml = `
+                    <button class="habit-menu-btn" data-id="${habit.id}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="1.5"></circle>
+                            <circle cx="19" cy="12" r="1.5"></circle>
+                            <circle cx="5" cy="12" r="1.5"></circle>
+                        </svg>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item edit-habit" data-id="${habit.id}">✏️ Edit</div>
+                            <div class="dropdown-item danger delete-habit" data-id="${habit.id}">🗑️ Delete</div>
+                        </div>
+                    </button>
+                `;
+            }
+
             const html = `
                 <div class="habit-card cat-${tagClass} ${isCompleted ? 'completed' : ''} anim-enter" style="animation-delay: ${delay}ms" data-id="${habit.id}">
                     <div class="habit-icon">${habit.emoji}</div>
@@ -199,6 +414,7 @@ const UI = {
                     <button class="btn-check" aria-label="Mark completed">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </button>
+                    ${menuHtml}
                 </div>
             `;
             this.habitList.insertAdjacentHTML('beforeend', html);
@@ -351,61 +567,95 @@ const UI = {
 
     renderStats() {
         const habits = Store.getHabits();
-        const completions = Store.getCompletions();
         
-        let bestStreak = 0;
-        let totalPossible = 0;
-        let totalCompleted = 0;
-
-        habits.forEach(h => {
-            if(h.streak > bestStreak) bestStreak = h.streak;
-            // Best historical streak would actually require a deeper calculate, but we will show current best streak for simplicity
-        });
-
-        // 30 days consistency
-        for(let i=0; i<30; i++) {
-            const d = Store.getDateStr(-i);
-            totalPossible += habits.length;
-            if (completions[d]) {
-                totalCompleted += completions[d].length;
-            }
+        if (habits.length === 0) {
+            document.getElementById('stat-consistency').textContent = '0%';
+            document.getElementById('stat-weakest-day').textContent = 'N/A';
+            document.getElementById('bar-chart-14').innerHTML = '';
+            document.getElementById('streak-bars-container').innerHTML = '<p class="small-text">No habits tracked.</p>';
+            return;
         }
-        
-        const consistency = totalPossible === 0 ? 0 : Math.round((totalCompleted / totalPossible) * 100);
-        
-        this.statsConsistency.textContent = consistency + '%';
-        this.statsBestStreak.innerHTML = `${bestStreak} <span class="small-text">days</span>`;
 
-        // Render Heatmap (current week)
-        this.heatmapGrid.innerHTML = '';
-        
-        // Days labels
-        const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-        const todayIdx = new Date().getDay();
-        
-        // Render headers
-        for(let i=0; i<7; i++) {
-            const dIdx = (todayIdx - 6 + i + 7) % 7; 
-            const dStr = Store.getDateStr(-6 + i);
-            const done = completions[dStr] ? completions[dStr].length : 0;
+        // 1. 30-Day Consistency & Weakest Day
+        const dayCounts = [0,0,0,0,0,0,0]; // Sun=0, Mon=1...
+        const dayPossible = [0,0,0,0,0,0,0];
+        let totalDone30 = 0;
+        let totalPossible30 = habits.length * 30;
+
+        for (let i = 0; i < 30; i++) {
+            const dateStr = Store.getDateStr(-i);
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dow = d.getDay();
             
-            // Level calculation (0-4 based on habits array size)
-            let level = 0;
-            if (done > 0) {
-                const pct = done / habits.length;
-                if (pct <= 0.25) level = 1;
-                else if (pct <= 0.5) level = 2;
-                else if (pct <= 0.75) level = 3;
-                else level = 4;
-            }
+            dayPossible[dow] += habits.length;
 
-            const html = `
-                <div class="heatmap-day">
-                    <span class="heatmap-label">${days[dIdx]}</span>
-                    <div class="heatmap-cell level-${level}"></div>
-                </div>
-            `;
-            this.heatmapGrid.insertAdjacentHTML('beforeend', html);
+            const doneToday = habits.filter(h => Store.isCompleted(h.id, dateStr)).length;
+            totalDone30 += doneToday;
+            dayCounts[dow] += doneToday;
         }
+
+        const consistency = Math.round((totalDone30 / totalPossible30) * 100);
+        document.getElementById('stat-consistency').textContent = consistency + '%';
+
+        // Weakest Day
+        const daysNamesFull = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let weakestIdx = -1;
+        let lowestPct = 100;
+        for (let i = 0; i < 7; i++) {
+            if (dayPossible[i] > 0) {
+                const pct = (dayCounts[i] / dayPossible[i]) * 100;
+                if (pct < lowestPct) {
+                    lowestPct = pct;
+                    weakestIdx = i;
+                }
+            }
+        }
+        document.getElementById('stat-weakest-day').textContent = weakestIdx >= 0 ? daysNamesFull[weakestIdx] : 'N/A';
+
+        // 2. 14-Day Bar Chart
+        const barChartContainer = document.getElementById('bar-chart-14');
+        let chartHtml = '';
+        const shortDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+        
+        for (let i = 13; i >= 0; i--) {
+            const dateStr = Store.getDateStr(-i);
+            const doneToday = habits.filter(h => Store.isCompleted(h.id, dateStr)).length;
+            const pct = Math.round((doneToday / habits.length) * 100);
+            
+            const tempDate = new Date();
+            tempDate.setDate(tempDate.getDate() - i);
+            const label = i === 0 ? 'T' : shortDays[tempDate.getDay()];
+
+            chartHtml += `
+            <div class="chart-bar-container">
+                <div class="chart-bar anim-enter" style="height: ${pct}%; animation-delay: ${(13-i)*40}ms"></div>
+                <span class="chart-label">${label}</span>
+            </div>`;
+        }
+        barChartContainer.innerHTML = chartHtml;
+
+        // 3. Best Streaks Horizontal Bars
+        const streakContainer = document.getElementById('streak-bars-container');
+        let streakHtml = '';
+        
+        // Find max streak to scale the bars (baseline max 30)
+        let absoluteMax = 30;
+        habits.forEach(h => { if(h.streak > absoluteMax) absoluteMax = h.streak; });
+
+        habits.forEach((habit, idx) => {
+            const widthPct = Math.min((habit.streak / absoluteMax) * 100, 100);
+            streakHtml += `
+            <div class="streak-bar-item anim-enter" style="animation-delay: ${idx * 60}ms">
+                <div class="streak-bar-label">${habit.emoji} ${habit.name}</div>
+                <div class="streak-bar-track">
+                    <div class="streak-bar-fill" style="width: ${widthPct}%"></div>
+                </div>
+                <div class="streak-count">${habit.streak}</div>
+            </div>`;
+        });
+        
+        streakContainer.innerHTML = streakHtml;
     }
+
 };

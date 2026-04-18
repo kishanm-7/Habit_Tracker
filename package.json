@@ -1,0 +1,29 @@
+{
+  "name": "habit_tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rmdir /S /Q www & mkdir www & copy index.html www && xcopy css www\\css\\ /E /I /Y && xcopy js www\\js\\ /E /I /Y",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kishanm-7/Habit_Tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kishanm-7/Habit_Tracker/issues"
+  },
+  "homepage": "https://github.com/kishanm-7/Habit_Tracker#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/core": "^8.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.3.1"
+  }
+}

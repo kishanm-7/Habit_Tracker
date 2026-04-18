@@ -8,21 +8,26 @@ const defaultHabits = [
     { id: '2', name: 'Read for 20–30 mins', emoji: '📚', category: 'Mind', frequency: 'daily', streak: 0, createdAt: new Date().toISOString() },
     { id: '3', name: 'Learn a new skill (30 mins)', emoji: '🧠', category: 'Growth', frequency: 'daily', streak: 0, createdAt: new Date().toISOString() },
     { id: '4', name: 'Social Media < 30 mins', emoji: '📵', category: 'Digital Detox', frequency: 'daily', streak: 0, createdAt: new Date().toISOString() },
-    { id: '5', name: 'Drink 8 glasses of water', emoji: '💧', category: 'Health', frequency: 'daily', streak: 0, createdAt: new Date().toISOString() },
+    { id: '5', name: 'Drink 3 Litres of Water', emoji: '💧', category: 'Health', frequency: 'daily', streak: 0, createdAt: new Date().toISOString() },
     { id: '6', name: 'Sleep by 11 PM', emoji: '😴', category: 'Recovery', frequency: 'daily', streak: 0, createdAt: new Date().toISOString() }
 ];
 
 const defaultSettings = {
     reminderTime: '08:00',
-    soundEnabled: true
+    soundEnabled: true,
+    theme: 'dark',
+    workDuration: 25,
+    breakDuration: 5,
+    longBreakDuration: 15
 };
 
 const Store = {
     getHabits() {
         const habits = localStorage.getItem(STORAGE_KEY_HABITS);
-        if (!habits) {
-            this.setHabits(defaultHabits);
-            return defaultHabits;
+        if (!habits || habits === "[]") {
+            const clone = JSON.parse(JSON.stringify(defaultHabits));
+            this.setHabits(clone);
+            return clone;
         }
         return JSON.parse(habits);
     },
@@ -40,6 +45,41 @@ const Store = {
             createdAt: new Date().toISOString()
         });
         this.setHabits(habits);
+    },
+
+    updateHabit(habitData) {
+        let habits = this.getHabits();
+        habits = habits.map(h => {
+            if (h.id === habitData.id) {
+                return { ...h, ...habitData };
+            }
+            return h;
+        });
+        this.setHabits(habits);
+    },
+
+    deleteHabit(habitId) {
+        let habits = this.getHabits();
+        habits = habits.filter(h => h.id !== habitId);
+        this.setHabits(habits);
+
+        let completions = this.getCompletions();
+        let changed = false;
+        for (const date in completions) {
+            const idx = completions[date].indexOf(habitId);
+            if (idx > -1) {
+                completions[date].splice(idx, 1);
+                changed = true;
+            }
+            if (completions[date].length === 0) {
+                delete completions[date];
+                changed = true;
+            }
+        }
+        if (changed) {
+            this.setCompletions(completions);
+            this.recalculateStreaks();
+        }
     },
 
     getCompletions() {

@@ -3,8 +3,8 @@ const Timer = {
     timeLeft: 25 * 60,
     timerId: null,
     isRunning: false,
-    durationMs: 25 * 60 * 1000,
-    startTime: 0,
+    mode: 'work',
+    pomodoroCount: 0,
     
     init() {
         this.cacheDOM();
@@ -20,6 +20,11 @@ const Timer = {
         this.btnReset = document.getElementById('btn-timer-reset');
         this.taskSelect = document.getElementById('timer-task-select');
         this.toggleSound = document.getElementById('toggle-sound');
+        
+        this.timerModeText = document.getElementById('timer-mode');
+        this.inputWork = document.getElementById('input-work');
+        this.inputBreak = document.getElementById('input-break');
+        this.inputLongBreak = document.getElementById('input-long-break');
     },
 
     bindEvents() {
@@ -28,12 +33,34 @@ const Timer = {
             else this.start();
         });
 
-        this.btnReset.addEventListener('click', () => {
-            this.reset();
+        this.btnReset.addEventListener('click', () => this.reset());
+
+        [this.inputWork, this.inputBreak, this.inputLongBreak].forEach(input => {
+            input.addEventListener('change', (e) => {
+                let val = parseInt(e.target.value) || 1;
+                const min = parseInt(e.target.min);
+                const max = parseInt(e.target.max);
+                if(val < min) val = min;
+                if(val > max) val = max;
+                e.target.value = val;
+
+                const settings = Store.getSettings();
+                settings.workDuration = parseInt(this.inputWork.value);
+                settings.breakDuration = parseInt(this.inputBreak.value);
+                settings.longBreakDuration = parseInt(this.inputLongBreak.value);
+                Store.setSettings(settings);
+
+                if (!this.isRunning) this.reset();
+            });
         });
     },
 
     renderOptions() {
+        const settings = Store.getSettings();
+        this.inputWork.value = settings.workDuration || 25;
+        this.inputBreak.value = settings.breakDuration || 5;
+        this.inputLongBreak.value = settings.longBreakDuration || 15;
+
         const habits = Store.getHabits();
         let html = '<option value="">None</option>';
         habits.forEach(h => {
@@ -41,14 +68,28 @@ const Timer = {
         });
         this.taskSelect.innerHTML = html;
         
-        // initialize circumference
         this.circumference = 2 * Math.PI * 130;
         this.ring.style.strokeDasharray = `${this.circumference} ${this.circumference}`;
         this.ring.style.strokeDashoffset = '0';
+        
+        this.reset();
+    },
+
+    getModeDuration() {
+        if (this.mode === 'break') return parseInt(this.inputBreak.value) * 60;
+        if (this.mode === 'longBreak') return parseInt(this.inputLongBreak.value) * 60;
+        return parseInt(this.inputWork.value) * 60;
+    },
+
+    setInputsLocked(locked) {
+        this.inputWork.disabled = locked;
+        this.inputBreak.disabled = locked;
+        this.inputLongBreak.disabled = locked;
     },
 
     start() {
         this.isRunning = true;
+        this.setInputsLocked(true);
         this.btnToggle.textContent = 'Pause';
         this.btnToggle.classList.replace('btn-primary', 'btn-secondary');
         
@@ -65,14 +106,16 @@ const Timer = {
     pause() {
         this.isRunning = false;
         clearInterval(this.timerId);
-        this.btnToggle.textContent = 'Resume';
+        this.setInputsLocked(false);
+        this.btnToggle.textContent = this.mode === 'work' ? 'Resume Focus' : 'Resume Break';
         this.btnToggle.classList.replace('btn-secondary', 'btn-primary');
     },
 
     reset() {
         this.pause();
-        this.timeLeft = 25 * 60;
-        this.btnToggle.textContent = 'Start Focus';
+        this.timeLeft = this.getModeDuration();
+        this.timerModeText.textContent = this.mode === 'work' ? 'Focus' : (this.mode === 'break' ? 'Short Break' : 'Long Break');
+        this.btnToggle.textContent = this.mode === 'work' ? 'Start Focus' : 'Start Break';
         this.btnToggle.classList.replace('btn-secondary', 'btn-primary');
         this.updateDisplay();
     },
@@ -82,28 +125,39 @@ const Timer = {
         const s = this.timeLeft % 60;
         this.display.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         
-        const pct = this.timeLeft / (25 * 60);
+        const total = this.getModeDuration();
+        const pct = this.timeLeft / total;
         const offset = this.circumference - (pct * this.circumference);
         this.ring.style.strokeDashoffset = offset;
     },
 
     complete() {
-        this.reset();
-        if(this.toggleSound.checked) {
-            // Beep sound via Web Audio API or vibration
+        if(this.toggleSound && this.toggleSound.checked) {
             if("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
             this.playBeep();
         }
         
-        // Mark task linked as complete
-        const linkedTask = this.taskSelect.value;
-        if (linkedTask) {
-             const todayStr = Store.getTodayStr();
-             if(!Store.isCompleted(linkedTask, todayStr)) {
-                 Store.toggleCompletion(linkedTask, todayStr);
-                 UI.renderDashboard();
-             }
+        if (this.mode === 'work') {
+            const linkedTask = this.taskSelect.value;
+            if (linkedTask) {
+                 const todayStr = Store.getTodayStr();
+                 if(!Store.isCompleted(linkedTask, todayStr)) {
+                     Store.toggleCompletion(linkedTask, todayStr);
+                     if (typeof UI !== 'undefined') UI.renderDashboard();
+                 }
+            }
+            this.pomodoroCount++;
+            if (this.pomodoroCount >= 4) {
+                this.mode = 'longBreak';
+                this.pomodoroCount = 0;
+            } else {
+                this.mode = 'break';
+            }
+        } else {
+            this.mode = 'work';
         }
+        
+        this.reset();
     },
 
     playBeep() {
