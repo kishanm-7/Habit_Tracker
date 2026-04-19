@@ -187,35 +187,51 @@
                     <h1>Settings</h1>
                 </header>
                 <div class="settings-list">
-                    <div class="setting-item">
-                        <div class="setting-info">
-                            <h3>Reminder Time</h3>
-                            <p>Daily notification</p>
-                        </div>
-                        <input type="time" id="reminder-time" class="time-input">
-                    </div>
-                    <div class="setting-item">
-                        <div class="setting-info">
+                    <!-- Theme Section -->
+                    <div class="settings-card">
+                        <div class="setting-info" style="margin-bottom: 12px;">
                             <h3>Dark Mode</h3>
                             <p>Premium dark aesthetic</p>
                         </div>
-                        <label class="toggle-switch">
+                        <label class="toggle-switch" style="width: 100%; display: flex; justify-content: flex-start;">
                             <input type="checkbox" id="toggle-theme" checked>
                             <span class="slider"></span>
                         </label>
                     </div>
+
+                    <!-- Reminder Section -->
+                    <div class="settings-card">
+                        <div class="setting-info" style="margin-bottom: 12px;">
+                            <h3>Reminder Time</h3>
+                            <p>Daily notification</p>
+                        </div>
+                        <input type="time" id="reminder-time" class="time-input" style="width: 100%;">
+                    </div>
                     
-                    <div class="setting-group mt-4">
+                    <!-- Manage Habits Section -->
+                    <div class="settings-card">
                         <h3 class="mb-2" style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Manage Habits</h3>
                         <div id="settings-habit-list" class="settings-habit-list">
                             <!-- Habits dynamically injected for editing -->
                         </div>
                     </div>
 
-                    <div class="setting-group danger-zone mt-4">
-                        <h3 class="mb-2" style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Data Management</h3>
-                        <button id="btn-export-data" class="btn-secondary full-width mb-2" style="background: transparent; border: 1px solid var(--border-color);">Export Data (.json)</button>
-                        <button id="btn-reset-data" class="btn-destructive full-width">Reset All Data</button>
+                    <!-- Export Data Section -->
+                    <div class="settings-card">
+                        <div class="setting-info" style="margin-bottom: 12px;">
+                            <h3>Export Data</h3>
+                            <p>Backup as JSON</p>
+                        </div>
+                        <button id="btn-export-data" class="btn-secondary settings-full-btn">Export Data (.json)</button>
+                    </div>
+
+                    <!-- Reset Data Section -->
+                    <div class="settings-card danger-zone">
+                        <div class="setting-info" style="margin-bottom: 12px;">
+                            <h3 style="color: var(--status-danger);">Danger Zone</h3>
+                            <p>Irreversible deletion</p>
+                        </div>
+                        <button id="btn-reset-data" class="btn-destructive settings-full-btn">Reset All Data</button>
                     </div>
                 </div>
             </section>
