@@ -201,11 +201,14 @@
 
                     <!-- Reminder Section -->
                     <div class="settings-card">
-                        <div class="setting-info" style="margin-bottom: 12px;">
-                            <h3>Reminder Time</h3>
-                            <p>Daily notification</p>
+                        <div class="setting-info" style="margin-bottom: 16px;">
+                            <h3>Daily Reminder Time</h3>
+                            <p>Status: <span id="notif-status" style="color: #F5A623; font-weight: bold;">Not set</span></p>
                         </div>
-                        <input type="time" id="reminder-time" class="time-input" style="width: 100%;">
+                        <input type="time" id="reminder-time" class="time-input" style="width: 100%; margin-bottom: 16px;">
+                        
+                        <button id="btn-enable-notif" class="btn-primary settings-full-btn" style="margin-top: 0; margin-bottom: 8px;">Enable Notifications</button>
+                        <button id="btn-test-notif" class="btn-secondary settings-full-btn" style="margin-top: 0; background: transparent; border: 1px solid var(--border-color);">Test Notification</button>
                     </div>
                     
                     <!-- Manage Habits Section -->

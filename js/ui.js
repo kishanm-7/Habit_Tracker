@@ -75,6 +75,10 @@ const UI = {
         this.toggleTheme = document.getElementById('toggle-theme');
         this.inputReminder = document.getElementById('reminder-time');
         this.settingsHabitList = document.getElementById('settings-habit-list');
+        
+        this.notifStatus = document.getElementById('notif-status');
+        this.btnEnableNotif = document.getElementById('btn-enable-notif');
+        this.btnTestNotif = document.getElementById('btn-test-notif');
 
         this.modalDelete = document.getElementById('modal-delete');
         this.btnCancelDelete = document.getElementById('btn-cancel-delete');
@@ -94,6 +98,49 @@ const UI = {
                 item.classList.add('active');
             });
         });
+
+        // Notifications
+        if(this.btnEnableNotif) {
+            this.btnEnableNotif.addEventListener('click', () => {
+                if (!("Notification" in window)) {
+                    alert("This browser does not support notifications.");
+                    return;
+                }
+                Notification.requestPermission().then((permission) => {
+                    this.updateNotifStatus();
+                    if (permission === "granted") {
+                        if('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.controller.postMessage({
+                                type: 'SYNC_REMINDER',
+                                time: document.getElementById('reminder-time').value || '09:00'
+                            });
+                        }
+                        alert("Notifications enabled successfully!");
+                    }
+                });
+            });
+        }
+
+        if(this.btnTestNotif) {
+            this.btnTestNotif.addEventListener('click', () => {
+                if (!("Notification" in window)) return;
+                
+                if (Notification.permission === "granted") {
+                    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({ type: 'TEST_NOTIFICATION' });
+                    } else if (navigator.serviceWorker) {
+                        navigator.serviceWorker.ready.then(reg => {
+                            reg.showNotification("Time to FORGE 🔥", {
+                                body: "Your habits are waiting. Don't break the streak.",
+                                icon: "/public/forge-logo.png"
+                            });
+                        });
+                    }
+                } else {
+                    alert("Please enable notifications first.");
+                }
+            });
+        }
 
         // Modals
         this.btnAddHabit.addEventListener('click', () => this.openModal(this.modalAddHabit));
@@ -319,9 +366,34 @@ const UI = {
         this.openModal(this.modalDelete);
     },
 
+    updateNotifStatus() {
+        if (!this.notifStatus) return;
+        if (!("Notification" in window)) {
+            this.notifStatus.textContent = "Unsupported";
+            this.notifStatus.style.color = "var(--text-muted)";
+            return;
+        }
+
+        switch (Notification.permission) {
+            case "granted":
+                this.notifStatus.textContent = "Allowed";
+                this.notifStatus.style.color = "var(--status-success, #2ECC71)";
+                break;
+            case "denied":
+                this.notifStatus.textContent = "Blocked";
+                this.notifStatus.style.color = "var(--status-danger, #E74C3C)";
+                break;
+            default:
+                this.notifStatus.textContent = "Not set";
+                this.notifStatus.style.color = "#F5A623";
+                break;
+        }
+    },
+
     renderSettings() {
         const settings = Store.getSettings();
-        this.inputReminder.value = settings.reminderTime || '08:00';
+        this.inputReminder.value = settings.reminderTime || '09:00';
+        this.updateNotifStatus();
         
         if (settings.theme === 'light') {
             this.toggleTheme.checked = false;
