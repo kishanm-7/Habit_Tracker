@@ -101,43 +101,93 @@ const UI = {
 
         // Notifications
         if(this.btnEnableNotif) {
-            this.btnEnableNotif.addEventListener('click', () => {
-                if (!("Notification" in window)) {
-                    alert("This browser does not support notifications.");
-                    return;
-                }
-                Notification.requestPermission().then((permission) => {
-                    this.updateNotifStatus();
-                    if (permission === "granted") {
-                        if('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                            navigator.serviceWorker.controller.postMessage({
-                                type: 'SYNC_REMINDER',
-                                time: document.getElementById('reminder-time').value || '09:00'
-                            });
-                        }
+            this.btnEnableNotif.addEventListener('click', async () => {
+                if (window.Capacitor && window.Capacitor.Plugins.LocalNotifications) {
+                    const { LocalNotifications } = window.Capacitor.Plugins;
+                    const permStatus = await LocalNotifications.requestPermissions();
+                    
+                    if (permStatus.display === 'granted') {
+                        this.updateNotifStatus();
+                        const timeStr = document.getElementById('reminder-time').value || '09:00';
+                        const [hours, minutes] = timeStr.split(':');
+                        
+                        await LocalNotifications.schedule({
+                            notifications: [
+                                {
+                                    title: "Time to FORGE 🔥",
+                                    body: "Your habits are waiting. Don't break the streak.",
+                                    id: 1,
+                                    schedule: {
+                                        on: { hour: parseInt(hours), minute: parseInt(minutes) },
+                                        allowWhileIdle: true
+                                    }
+                                }
+                            ]
+                        });
                         alert("Notifications enabled successfully!");
+                    } else {
+                        this.updateNotifStatus();
+                        alert("Notification permission denied!");
                     }
-                });
+                } else {
+                    // Fallback to Web API for Vercel
+                    if (!("Notification" in window)) {
+                        alert("This browser does not support notifications.");
+                        return;
+                    }
+                    Notification.requestPermission().then((permission) => {
+                        this.updateNotifStatus();
+                        if (permission === "granted") {
+                            if('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                                navigator.serviceWorker.controller.postMessage({
+                                    type: 'SYNC_REMINDER',
+                                    time: document.getElementById('reminder-time').value || '09:00'
+                                });
+                            }
+                            alert("Notifications enabled successfully!");
+                        }
+                    });
+                }
             });
         }
 
         if(this.btnTestNotif) {
-            this.btnTestNotif.addEventListener('click', () => {
-                if (!("Notification" in window)) return;
-                
-                if (Notification.permission === "granted") {
-                    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage({ type: 'TEST_NOTIFICATION' });
-                    } else if (navigator.serviceWorker) {
-                        navigator.serviceWorker.ready.then(reg => {
-                            reg.showNotification("Time to FORGE 🔥", {
-                                body: "Your habits are waiting. Don't break the streak.",
-                                icon: "/public/forge-logo.png"
-                            });
+            this.btnTestNotif.addEventListener('click', async () => {
+                if (window.Capacitor && window.Capacitor.Plugins.LocalNotifications) {
+                    const { LocalNotifications } = window.Capacitor.Plugins;
+                    const permStatus = await LocalNotifications.checkPermissions();
+                    if (permStatus.display === 'granted') {
+                        await LocalNotifications.schedule({
+                            notifications: [
+                                {
+                                    title: "Time to FORGE 🔥",
+                                    body: "Your habits are waiting. Don't break the streak.",
+                                    id: 2,
+                                    schedule: { at: new Date(Date.now() + 1000) } // Fires instantly
+                                }
+                            ]
                         });
+                    } else {
+                        alert("Please enable notifications first.");
                     }
                 } else {
-                    alert("Please enable notifications first.");
+                    // Fallback to Web API for Vercel
+                    if (!("Notification" in window)) return;
+                    
+                    if (Notification.permission === "granted") {
+                        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.controller.postMessage({ type: 'TEST_NOTIFICATION' });
+                        } else if (navigator.serviceWorker) {
+                            navigator.serviceWorker.ready.then(reg => {
+                                reg.showNotification("Time to FORGE 🔥", {
+                                    body: "Your habits are waiting. Don't break the streak.",
+                                    icon: "/public/forge-logo.png"
+                                });
+                            });
+                        }
+                    } else {
+                        alert("Please enable notifications first.");
+                    }
                 }
             });
         }
@@ -366,8 +416,28 @@ const UI = {
         this.openModal(this.modalDelete);
     },
 
-    updateNotifStatus() {
+    async updateNotifStatus() {
         if (!this.notifStatus) return;
+        
+        if (window.Capacitor && window.Capacitor.Plugins.LocalNotifications) {
+            try {
+                const perm = await window.Capacitor.Plugins.LocalNotifications.checkPermissions();
+                if (perm.display === "granted") {
+                    this.notifStatus.textContent = "Allowed";
+                    this.notifStatus.style.color = "var(--status-success, #2ECC71)";
+                } else if (perm.display === "denied") {
+                    this.notifStatus.textContent = "Blocked";
+                    this.notifStatus.style.color = "var(--status-danger, #E74C3C)";
+                } else {
+                    this.notifStatus.textContent = "Not set";
+                    this.notifStatus.style.color = "#F5A623";
+                }
+                return;
+            } catch (e) {
+                console.error("Native permission check failed:", e);
+            }
+        }
+
         if (!("Notification" in window)) {
             this.notifStatus.textContent = "Unsupported";
             this.notifStatus.style.color = "var(--text-muted)";
