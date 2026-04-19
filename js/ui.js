@@ -231,6 +231,7 @@ const UI = {
             document.querySelector('#form-add-habit button[type="submit"]').textContent = 'Create Habit';
             this.renderDashboard();
             this.renderStats();
+            this.renderSettings();
         });
 
         // Initialize Add Default
@@ -490,12 +491,10 @@ const UI = {
                     <span class="habit-emoji">${habit.emoji}</span>
                     <span class="habit-name-text">${habit.name}</span>
                 </div>
-                ${!isDefault ? `
                 <div class="habit-actions">
                     <button class="btn-icon edit-habit-btn" data-id="${habit.id}">✏️</button>
-                    <button class="btn-icon danger delete-habit-btn" data-id="${habit.id}">🗑️</button>
+                    ${!isDefault ? `<button class="btn-icon danger delete-habit-btn" data-id="${habit.id}">🗑️</button>` : `<span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Default</span>`}
                 </div>
-                ` : '<div class="habit-actions"><span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Default</span></div>'}
             </div>`;
         });
         this.settingsHabitList.innerHTML = html;
