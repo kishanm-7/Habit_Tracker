@@ -50,6 +50,7 @@ const UI = {
     cacheDOM() {
         this.habitList = document.getElementById('habit-list');
         this.headerDate = document.getElementById('header-date');
+        this.dynamicGreeting = document.getElementById('dynamic-greeting');
         this.globalStreak = document.getElementById('global-streak');
         this.progressRing = document.getElementById('daily-progress-ring');
         this.progressPercent = document.getElementById('progress-percent');
@@ -517,6 +518,24 @@ const UI = {
         const d = new Date();
         const options = { weekday: 'long', month: 'long', day: 'numeric' };
         this.headerDate.textContent = d.toLocaleDateString('en-US', options);
+        
+        // Dynamic Greeting Engine
+        if (this.dynamicGreeting) {
+            const hour = d.getHours();
+            let greetingPrefix;
+
+            if (hour >= 5 && hour < 12) {
+                greetingPrefix = "Good morning, ";
+            } else if (hour >= 12 && hour < 17) {
+                greetingPrefix = "Good afternoon, ";
+            } else if (hour >= 17 && hour < 21) {
+                greetingPrefix = "Good evening, ";
+            } else {
+                greetingPrefix = "Still up, ";
+            }
+
+            this.dynamicGreeting.innerHTML = `${greetingPrefix}<span class="accent">warrior.</span>`;
+        }
         
         // Quote
         const quoteIndex = d.getDate() % quotes.length;
