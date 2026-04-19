@@ -55,39 +55,35 @@ const initApp = () => {
     }
 
     // Main App Background Notification Loop
-    setInterval(() => {
-        const now = new Date();
-        const currentTime = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
-        const reminderTime = localStorage.getItem("reminderTime") || "09:00";
+    function checkNotificationTime() {
+        const reminderTime = localStorage.getItem('reminderTime');
+        if (!reminderTime) return;
         
-        if (currentTime === reminderTime) {
-            const lastNotified = localStorage.getItem("lastNotified");
-            const todayStr = now.toDateString();
+        const now = new Date();
+        const currentHours = now.getHours();
+        const currentMinutes = now.getMinutes();
+        const [reminderHours, reminderMinutes] = reminderTime.split(':').map(Number);
+        
+        const lastNotified = localStorage.getItem('lastNotified');
+        const today = now.toDateString();
+        
+        if (currentHours === reminderHours && 
+            currentMinutes === reminderMinutes && 
+            lastNotified !== today) {
             
-            if (lastNotified !== todayStr) {
-                localStorage.setItem("lastNotified", todayStr);
-                
-                // Fire notification
-                if (window.Capacitor && window.Capacitor.Plugins.LocalNotifications) {
-                    window.Capacitor.Plugins.LocalNotifications.schedule({
-                        notifications: [{
-                            title: "Time to FORGE 🔥",
-                            body: "Your habits are waiting. Don't break the streak.",
-                            id: 3,
-                            schedule: { at: new Date(Date.now() + 1000) }
-                        }]
-                    });
-                } else if ("Notification" in window && Notification.permission === "granted") {
-                    navigator.serviceWorker.ready.then(reg => {
-                        reg.showNotification("Time to FORGE 🔥", {
-                            body: "Your habits are waiting. Don't break the streak.",
-                            icon: "/public/forge-logo.png"
-                        });
-                    });
-                }
-            }
+            new Notification('Time to FORGE 🔥', {
+                body: "Your habits are waiting. Don't break the streak.",
+                icon: '/public/forge-logo.png'
+            });
+            
+            localStorage.setItem('lastNotified', today);
         }
-    }, 60000);
+    }
+    
+    // Start checking every 30 seconds
+    setInterval(checkNotificationTime, 30000);
+    // Also check immediately on load
+    checkNotificationTime();
 };
 
 if (document.readyState === 'loading') {

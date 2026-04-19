@@ -302,19 +302,6 @@ const UI = {
         });
 
         // Settings Inputs
-        this.toggleTheme.addEventListener('change', (e) => {
-            const isLight = !e.target.checked; // If checked, it's dark
-            if (isLight) {
-                document.body.classList.add('theme-light');
-                document.body.classList.remove('theme-dark');
-            } else {
-                document.body.classList.remove('theme-light');
-                document.body.classList.add('theme-dark');
-            }
-            const settings = Store.getSettings();
-            settings.theme = isLight ? 'light' : 'dark';
-            Store.setSettings(settings);
-        });
 
         this.inputReminder.addEventListener('change', (e) => {
             const settings = Store.getSettings();
@@ -466,16 +453,8 @@ const UI = {
         const settings = Store.getSettings();
         this.inputReminder.value = settings.reminderTime || '09:00';
         this.updateNotifStatus();
-        
-        if (settings.theme === 'light') {
-            this.toggleTheme.checked = false;
-            document.body.classList.add('theme-light');
-            document.body.classList.remove('theme-dark');
-        } else {
-            this.toggleTheme.checked = true;
-            document.body.classList.add('theme-dark');
-            document.body.classList.remove('theme-light');
-        }
+        document.body.classList.add('theme-dark');
+        document.body.classList.remove('theme-light');
 
         const habits = Store.getHabits();
         if (habits.length === 0) {
