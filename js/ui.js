@@ -341,16 +341,19 @@ const UI = {
 
         let html = '';
         habits.forEach(habit => {
+            const isDefault = ['1','2','3','4','5','6'].includes(habit.id);
             html += `
             <div class="settings-habit-item">
                 <div class="habit-info">
-                    <span>${habit.emoji}</span>
-                    <span>${habit.name}</span>
+                    <span class="habit-emoji">${habit.emoji}</span>
+                    <span class="habit-name-text">${habit.name}</span>
                 </div>
+                ${!isDefault ? `
                 <div class="habit-actions">
                     <button class="btn-icon edit-habit-btn" data-id="${habit.id}">✏️</button>
                     <button class="btn-icon danger delete-habit-btn" data-id="${habit.id}">🗑️</button>
                 </div>
+                ` : '<div class="habit-actions"><span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Default</span></div>'}
             </div>`;
         });
         this.settingsHabitList.innerHTML = html;
