@@ -104,5 +104,5 @@ window.addEventListener('load', function() {
         if (app) app.style.display = 'block';
       }, 800);
     }
-  }, 3500);
+  }, 5000);
 });
