@@ -357,7 +357,7 @@ const UI = {
             }
         });
 
-        // Mobile keyboard scroll into view fix
+        // Fix mobile keyboard scrolling
         const modalInputs = document.querySelectorAll('.modal input, .modal textarea, .modal select');
         modalInputs.forEach(input => {
             input.addEventListener('focus', function() {

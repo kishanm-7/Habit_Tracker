@@ -1191,16 +1191,14 @@ input:checked + .slider:before {
     border-bottom: none;
     z-index: 201;
     transition: bottom var(--transition-med);
-    padding: 0;
+    padding: var(--space-3) var(--space-3) 40px;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-    overflow: hidden;
 }
 
 .modal-content {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     max-height: 85vh;
-    padding: var(--space-3) var(--space-3) 40px;
 }
 
 .modal.active {
@@ -1496,17 +1494,4 @@ input:checked + .slider:before {
     letter-spacing: 6px;
     text-decoration: none;
     margin-right: -6px; /* Offset to center correctly due to letter-spacing */
-}
-
-.skeleton-line {
-  height: 12px;
-  background: #2A2A2E;
-  border-radius: 4px;
-  margin: 8px 0;
-  animation: skeleton-pulse 1.5s ease infinite;
-}
-
-@keyframes skeleton-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
 }
