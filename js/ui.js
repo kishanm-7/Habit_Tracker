@@ -42,9 +42,97 @@ const UI = {
         if (splash) {
             setTimeout(() => {
                 splash.classList.add('fade-out');
-                setTimeout(() => splash.remove(), 800);
+                setTimeout(() => {
+                    splash.remove();
+                    if (!localStorage.getItem('onboardingComplete')) {
+                        document.getElementById('onboarding-flow').style.display = 'flex';
+                        UI.initOnboarding();
+                    } else {
+                        document.getElementById('main-app-container').style.display = 'block';
+                    }
+                }, 800);
             }, 6200);
+        } else {
+            if (!localStorage.getItem('onboardingComplete')) {
+                document.getElementById('onboarding-flow').style.display = 'flex';
+                UI.initOnboarding();
+            } else {
+                document.getElementById('main-app-container').style.display = 'block';
+            }
         }
+    },
+
+    initOnboarding() {
+        this.obSlideIndex = 0;
+        this.obSlides = document.querySelectorAll('.onboarding-slide');
+        this.obWrapper = document.getElementById('ob-slides-wrapper');
+        this.obDots = document.querySelectorAll('.ob-dot');
+        this.obBtnNext = document.getElementById('ob-btn-next');
+        this.obBtnBack = document.getElementById('ob-btn-back');
+        this.obReminder = document.getElementById('ob-reminder-time');
+        
+        this.obBtnNext.addEventListener('click', () => {
+            if (this.obSlideIndex === 2) {
+                // Finalize Onboarding
+                this.completeOnboarding();
+            } else {
+                this.obSlideIndex++;
+                this.updateOnboardingView();
+            }
+        });
+
+        this.obBtnBack.addEventListener('click', () => {
+            if (this.obSlideIndex > 0) {
+                this.obSlideIndex--;
+                this.updateOnboardingView();
+            }
+        });
+    },
+
+    updateOnboardingView() {
+        this.obWrapper.style.transform = `translateX(-${this.obSlideIndex * 100}vw)`;
+        
+        this.obDots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === this.obSlideIndex);
+        });
+
+        this.obBtnBack.style.visibility = this.obSlideIndex > 0 ? 'visible' : 'hidden';
+
+        if (this.obSlideIndex === 2) {
+            this.obBtnNext.textContent = 'Start Forging';
+        } else if (this.obSlideIndex === 1) {
+            this.obBtnNext.textContent = 'Continue';
+        } else {
+            this.obBtnNext.textContent = 'Get Started';
+        }
+    },
+
+    completeOnboarding() {
+        const timeVal = this.obReminder.value || '08:00';
+        localStorage.setItem('reminderTime', timeVal);
+        localStorage.setItem('onboardingComplete', 'true');
+        
+        const settings = Store.getSettings();
+        settings.reminderTime = timeVal;
+        Store.setSettings(settings);
+
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+                type: 'SYNC_REMINDER',
+                time: timeVal
+            });
+        }
+        
+        // Android specific request prompt
+        if (window.Capacitor && window.Capacitor.Plugins.LocalNotifications) {
+            window.Capacitor.Plugins.LocalNotifications.requestPermissions();
+        } else if ("Notification" in window) {
+            Notification.requestPermission();
+        }
+
+        document.getElementById('onboarding-flow').style.display = 'none';
+        document.getElementById('main-app-container').style.display = 'block';
+        this.renderSettings(); // Update settings view accurately with new reminder time
     },
 
     cacheDOM() {
