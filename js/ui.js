@@ -206,6 +206,19 @@ const UI = {
             categorySelect.value = e.target.value;
         });
 
+        // Keyboard overlap fix for modal inputs
+        const modalInputs = this.formAddHabit.querySelectorAll('input, select, textarea');
+        modalInputs.forEach(inputElement => {
+            inputElement.addEventListener('focus', function() {
+                setTimeout(() => {
+                    this.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                }, 300);
+            });
+        });
+
         // Add Habit Form
         this.formAddHabit.addEventListener('submit', (e) => {
             e.preventDefault();

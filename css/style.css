@@ -1210,6 +1210,12 @@ input:checked + .slider:before {
     font-size: 1.5rem;
 }
 
+.modal-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 85vh;
+}
+
 /* Empty State */
 .empty-state {
     text-align: center;
