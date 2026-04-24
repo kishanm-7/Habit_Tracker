@@ -71,7 +71,14 @@ body {
     color: var(--text-main);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
-    overflow: hidden; /* App container handles scrolling */
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+}
+
+html {
+  height: 100%;
+  overflow-y: auto;
 }
 
 /* Noise Filter */
@@ -105,10 +112,10 @@ h1, h2, h3, h4 {
 
 /* Layout */
 .app-container {
-    display: flex;
+    display: none;
     flex-direction: column;
-    height: 100vh;
-    height: 100dvh; /* Mobile browser support */
+    height: 100%;
+    overflow-y: auto;
     max-width: 600px;
     margin: 0 auto;
     position: relative;

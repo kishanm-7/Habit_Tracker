@@ -1,19 +1,30 @@
-// Guaranteed habit seeding — runs before anything else
-function initializeHabits() {
-    const existing = localStorage.getItem('forge_habits');
-    if (!existing || JSON.parse(existing).length === 0) {
-        const defaults = [
-            { id: '1', name: 'Gym / Workout', emoji: '🏋️', category: 'FITNESS', isDefault: true, streak: 0, completions: {} },
-            { id: '2', name: 'Read for 20-30 mins', emoji: '📚', category: 'MIND', isDefault: true, streak: 0, completions: {} },
-            { id: '3', name: 'Learn a new skill (30 mins)', emoji: '🧠', category: 'GROWTH', isDefault: true, streak: 0, completions: {} },
-            { id: '4', name: 'Social Media < 30 mins', emoji: '📵', category: 'DIGITAL DETOX', isDefault: true, streak: 0, completions: {} },
-            { id: '5', name: 'Drink 3 Litres of Water', emoji: '💧', category: 'HEALTH', isDefault: true, streak: 0, completions: {} },
-            { id: '6', name: 'Sleep by 11 PM', emoji: '😴', category: 'RECOVERY', isDefault: true, streak: 0, completions: {} }
-        ];
-        localStorage.setItem('forge_habits', JSON.stringify(defaults));
-    }
-}
-initializeHabits();
+(function initHabits() {
+  const key = 'forge_habits';
+  const existing = localStorage.getItem(key);
+  if (!existing || JSON.parse(existing).length === 0) {
+    const defaults = [
+      { id: '1', name: 'Gym / Workout', emoji: '🏋️', 
+        category: 'FITNESS', isDefault: true, 
+        streak: 0, completions: {} },
+      { id: '2', name: 'Read for 20-30 mins', emoji: '📚', 
+        category: 'MIND', isDefault: true, 
+        streak: 0, completions: {} },
+      { id: '3', name: 'Learn a new skill (30 mins)', 
+        emoji: '🧠', category: 'GROWTH', isDefault: true, 
+        streak: 0, completions: {} },
+      { id: '4', name: 'Social Media < 30 mins', 
+        emoji: '📵', category: 'DIGITAL DETOX', 
+        isDefault: true, streak: 0, completions: {} },
+      { id: '5', name: 'Drink 3 Litres of Water', 
+        emoji: '💧', category: 'HEALTH', isDefault: true, 
+        streak: 0, completions: {} },
+      { id: '6', name: 'Sleep by 11 PM', emoji: '😴', 
+        category: 'RECOVERY', isDefault: true, 
+        streak: 0, completions: {} }
+    ];
+    localStorage.setItem(key, JSON.stringify(defaults));
+  }
+})();
 
 const initApp = () => {
     // Recalculate streaks before rendering to ensure accurate display
@@ -110,16 +121,24 @@ if (document.readyState === 'loading') {
 }
 
 window.addEventListener('load', function() {
+  var app = document.getElementById('app');
+  if (app) {
+    app.style.display = 'block';
+    app.style.overflow = 'auto';
+    app.style.height = '100%';
+  }
+  
   setTimeout(function() {
     var splash = document.getElementById('splash-screen');
-    var app = document.getElementById('app');
     if (splash) {
       splash.style.transition = 'opacity 0.8s ease';
       splash.style.opacity = '0';
       setTimeout(function() {
         splash.style.display = 'none';
-        if (app) app.style.display = 'block';
+        splash.remove();
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
       }, 800);
     }
-  }, 5000);
+  }, 4000);
 });
