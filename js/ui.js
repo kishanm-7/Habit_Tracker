@@ -38,28 +38,7 @@ const UI = {
         this.bindEvents();
         this.renderDashboard();
         
-        const splash = document.getElementById('splash-screen');
-        if (splash) {
-            setTimeout(() => {
-                splash.classList.add('fade-out');
-                setTimeout(() => {
-                    splash.remove();
-                    if (!localStorage.getItem('onboardingComplete')) {
-                        document.getElementById('onboarding-flow').style.display = 'flex';
-                        UI.initOnboarding();
-                    } else {
-                        document.getElementById('main-app-container').style.display = 'block';
-                    }
-                }, 800);
-            }, 6200);
-        } else {
-            if (!localStorage.getItem('onboardingComplete')) {
-                document.getElementById('onboarding-flow').style.display = 'flex';
-                UI.initOnboarding();
-            } else {
-                document.getElementById('main-app-container').style.display = 'block';
-            }
-        }
+        // Splash routing is now enforced synchronously within app.js boot sequence
     },
 
     initOnboarding() {

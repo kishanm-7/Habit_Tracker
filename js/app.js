@@ -87,8 +87,43 @@ const initApp = () => {
     checkNotificationTime();
 };
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
-} else {
+const bootSequence = () => {
     initApp();
+
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.style.opacity = '0';
+            splash.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                splash.remove();
+                
+                // Native UI Routing
+                if (!localStorage.getItem('onboardingComplete')) {
+                    const ob = document.getElementById('onboarding-flow');
+                    if(ob) ob.style.display = 'flex';
+                    if(window.UI && window.UI.initOnboarding) UI.initOnboarding();
+                } else {
+                    const mainApp = document.getElementById('main-app-container') || document.getElementById('app');
+                    if(mainApp) mainApp.style.display = 'block';
+                }
+            }, 500);
+        } else {
+            if (!localStorage.getItem('onboardingComplete')) {
+                const ob = document.getElementById('onboarding-flow');
+                if(ob) ob.style.display = 'flex';
+                if(window.UI && window.UI.initOnboarding) UI.initOnboarding();
+            } else {
+                const mainApp = document.getElementById('main-app-container') || document.getElementById('app');
+                if(mainApp) mainApp.style.display = 'block';
+            }
+        }
+    }, 5000);
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootSequence);
+} else {
+    bootSequence();
 }
