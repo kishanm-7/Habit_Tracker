@@ -21,14 +21,6 @@
 <body class="theme-dark">
     <!-- Splash Screen -->
     <div id="splash-screen">
-        <h1 style="font-family: 'Syne', sans-serif; font-size: 64px; font-weight: 800; color: #F5A623; letter-spacing: 16px; margin: 0 0 16px -16px; text-align: center;">FORGE</h1>
-        <div style="font-family: var(--font-body); font-size: 13px; color: #6A6460; letter-spacing: 4px; text-transform: uppercase;">Build the person you intend to become.</div>
-    </div>
-    <!-- Noise Overlay -->
-    <div class="noise-overlay"></div>
-
-    <!-- Onboarding Flow -->
-    <div id="onboarding-flow" class="onboarding-container" style="display: none;">
         <div class="splash-particles">
             <div class="ember" style="left: 20%; animation-delay: 0.2s;"></div>
             <div class="ember" style="left: 80%; animation-delay: 0.5s;"></div>
@@ -38,64 +30,25 @@
             <div class="ember" style="left: 70%; animation-delay: 0.4s;"></div>
             <div class="ember" style="left: 50%; animation-delay: 1.8s;"></div>
         </div>
-        
-        <div class="onboarding-slides-wrapper" id="ob-slides-wrapper">
-            <!-- Slide 1 -->
-            <div class="onboarding-slide active" data-index="0">
-                <div class="ob-emoji">⚒️</div>
-                <h1 class="ob-heading">Welcome to FORGE</h1>
-                <p class="ob-subtext">The daily discipline app for people who take their growth seriously.</p>
-                <div class="ob-divider"></div>
-            </div>
-            
-            <!-- Slide 2 -->
-            <div class="onboarding-slide" data-index="1">
-                <h1 class="ob-heading ob-light">Your Daily Ritual</h1>
-                <div class="ob-feature-list">
-                    <div class="ob-feature-row">
-                        <div class="ob-gold-circle">1</div>
-                        <p>Check your habits every morning</p>
-                    </div>
-                    <div class="ob-feature-row">
-                        <div class="ob-gold-circle">2</div>
-                        <p>Mark them done as you complete them</p>
-                    </div>
-                    <div class="ob-feature-row">
-                        <div class="ob-gold-circle">3</div>
-                        <p>Never break the streak</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Slide 3 -->
-            <div class="onboarding-slide" data-index="2">
-                <h1 class="ob-heading ob-light">One Last Thing</h1>
-                <p class="ob-subtext ob-light-sub">Set a daily reminder so FORGE keeps you accountable.</p>
-                <div class="ob-time-picker">
-                    <input type="time" id="ob-reminder-time" class="time-input" value="08:00">
-                </div>
-            </div>
+        <div class="forge-ignition">
+            <div class="spark"></div>
+            <div class="ignition-ring"></div>
+            <div class="hammer-strike">⚒️</div>
         </div>
-        
-        <!-- Onboarding Controls -->
-        <div class="onboarding-controls">
-            <div class="ob-nav-left">
-                <button id="ob-btn-back" class="btn-icon" style="visibility: hidden;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                </button>
-            </div>
-            <div class="ob-dots">
-                <span class="ob-dot active"></span>
-                <span class="ob-dot"></span>
-                <span class="ob-dot"></span>
-            </div>
-            <div class="ob-nav-right">
-                <button id="ob-btn-next" class="btn-primary ob-action-btn" style="min-width: 130px;">Get Started</button>
-            </div>
+        <div class="forge-text-container">
+            <span class="forge-letter" style="animation-delay: 1.50s">F</span>
+            <span class="forge-letter" style="animation-delay: 1.65s">O</span>
+            <span class="forge-letter" style="animation-delay: 1.80s">R</span>
+            <span class="forge-letter" style="animation-delay: 1.95s">G</span>
+            <span class="forge-letter" style="animation-delay: 2.10s">E</span>
         </div>
+        <div class="forge-tagline">Build the person you intend to become.</div>
+        <div class="gold-line"></div>
     </div>
+    <!-- Noise Overlay -->
+    <div class="noise-overlay"></div>
 
-    <div id="main-app-container" class="app-container" style="display: none;">
+    <div class="app-container">
         <!-- Global Header -->
         <header class="app-top-nav" style="padding: 16px 24px 0 24px; text-align: left; background: var(--bg-base);">
             <div class="forge-text-logo">FORGE</div>

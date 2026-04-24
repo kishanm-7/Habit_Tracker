@@ -36,7 +36,6 @@ const initApp = () => {
         tsInput.addEventListener('change', (e) => {
             settings.soundEnabled = e.target.checked;
             Store.setSettings(settings);
-            UI.showToast("Settings saved");
         });
     }
 
@@ -87,29 +86,8 @@ const initApp = () => {
     checkNotificationTime();
 };
 
-window.onload = function() {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
     initApp();
-    const splash = document.getElementById('splash-screen');
-    
-    setTimeout(() => {
-        if (splash) {
-            splash.style.transition = 'opacity 0.8s ease';
-            splash.style.opacity = '0';
-            
-            setTimeout(() => {
-                splash.style.display = 'none';
-                splash.remove();
-                
-                // Native UI Routing
-                if (!localStorage.getItem('onboardingComplete')) {
-                    const ob = document.getElementById('onboarding-flow');
-                    if(ob) ob.style.display = 'flex';
-                    if(window.UI && window.UI.initOnboarding) UI.initOnboarding();
-                } else {
-                    const mainApp = document.getElementById('main-app-container') || document.getElementById('app');
-                    if(mainApp) mainApp.style.display = 'block';
-                }
-            }, 800);
-        }
-    }, 2500);
-};
+}

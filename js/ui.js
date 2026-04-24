@@ -38,80 +38,13 @@ const UI = {
         this.bindEvents();
         this.renderDashboard();
         
-        // Splash routing is now enforced synchronously within app.js boot sequence
-    },
-
-    initOnboarding() {
-        this.obSlideIndex = 0;
-        this.obSlides = document.querySelectorAll('.onboarding-slide');
-        this.obWrapper = document.getElementById('ob-slides-wrapper');
-        this.obDots = document.querySelectorAll('.ob-dot');
-        this.obBtnNext = document.getElementById('ob-btn-next');
-        this.obBtnBack = document.getElementById('ob-btn-back');
-        this.obReminder = document.getElementById('ob-reminder-time');
-        
-        this.obBtnNext.addEventListener('click', () => {
-            if (this.obSlideIndex === 2) {
-                // Finalize Onboarding
-                this.completeOnboarding();
-            } else {
-                this.obSlideIndex++;
-                this.updateOnboardingView();
-            }
-        });
-
-        this.obBtnBack.addEventListener('click', () => {
-            if (this.obSlideIndex > 0) {
-                this.obSlideIndex--;
-                this.updateOnboardingView();
-            }
-        });
-    },
-
-    updateOnboardingView() {
-        this.obWrapper.style.transform = `translateX(-${this.obSlideIndex * 100}vw)`;
-        
-        this.obDots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === this.obSlideIndex);
-        });
-
-        this.obBtnBack.style.visibility = this.obSlideIndex > 0 ? 'visible' : 'hidden';
-
-        if (this.obSlideIndex === 2) {
-            this.obBtnNext.textContent = 'Start Forging';
-        } else if (this.obSlideIndex === 1) {
-            this.obBtnNext.textContent = 'Continue';
-        } else {
-            this.obBtnNext.textContent = 'Get Started';
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            setTimeout(() => {
+                splash.classList.add('fade-out');
+                setTimeout(() => splash.remove(), 800);
+            }, 6200);
         }
-    },
-
-    completeOnboarding() {
-        const timeVal = this.obReminder.value || '08:00';
-        localStorage.setItem('reminderTime', timeVal);
-        localStorage.setItem('onboardingComplete', 'true');
-        
-        const settings = Store.getSettings();
-        settings.reminderTime = timeVal;
-        Store.setSettings(settings);
-
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({
-                type: 'SYNC_REMINDER',
-                time: timeVal
-            });
-        }
-        
-        // Android specific request prompt
-        if (window.Capacitor && window.Capacitor.Plugins.LocalNotifications) {
-            window.Capacitor.Plugins.LocalNotifications.requestPermissions();
-        } else if ("Notification" in window) {
-            Notification.requestPermission();
-        }
-
-        document.getElementById('onboarding-flow').style.display = 'none';
-        document.getElementById('main-app-container').style.display = 'block';
-        this.renderSettings(); // Update settings view accurately with new reminder time
     },
 
     cacheDOM() {
@@ -424,9 +357,9 @@ const UI = {
         });
 
         this.btnResetData.addEventListener('click', () => {
-            // Replace confirm with dual-click modal or instant wipe. Since prompt asks to replace confirm() with toast:
-            this.showToast("Data reset");
-            setTimeout(() => { Store.clearAllData(); }, 1500);
+            this.showToast("Wipe all data? This cannot be undone.", true, () => {
+                Store.clearAllData();
+            });
         });
 
         // Settings Dropdown/Action Routing Context
@@ -944,24 +877,45 @@ const UI = {
         document.getElementById('export-json-content').value = jsonStr;
         document.getElementById('modal-backdrop').classList.add('active');
         exportModal.classList.add('active');
-    }
     },
 
-    showToast(message) {
-        let toast = document.getElementById('forge-global-toast');
-        if (!toast) {
-            toast = document.createElement('div');
-            toast.id = 'forge-global-toast';
-            toast.className = 'forge-toast';
-            document.body.appendChild(toast);
+    showToast(message, isConfirm = false, onConfirm = null) {
+        const existing = document.getElementById('forge-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'forge-toast';
+        toast.className = 'forge-toast anim-slide-up';
+        
+        let content = `<span style="margin-right: 8px;">✅</span><span>${message}</span>`;
+        if (isConfirm) {
+            content = `<span style="margin-right: 8px;">⚠️</span><span style="margin-right: 16px;">${message}</span>
+                       <button id="toast-yes" style="background: var(--status-danger); color: white; border: none; padding: 4px 12px; border-radius: 4px; margin-right: 8px; font-family: 'Syne', serif; cursor: pointer;">Yes</button>
+                       <button id="toast-no" style="background: transparent; color: white; border: 1px solid var(--border-color); padding: 4px 12px; border-radius: 4px; font-family: 'Syne', serif; cursor: pointer;">No</button>`;
         }
-        
-        toast.innerHTML = `✅ <span>${message}</span>`;
-        toast.classList.add('show');
-        
-        if (toast.hideTimeout) clearTimeout(toast.hideTimeout);
-        toast.hideTimeout = setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2500);
+
+        toast.innerHTML = content;
+        document.body.appendChild(toast);
+
+        if (isConfirm) {
+            document.getElementById('toast-yes').onclick = () => {
+                onConfirm();
+                this.dismissToast(toast);
+            };
+            document.getElementById('toast-no').onclick = () => {
+                this.dismissToast(toast);
+            };
+        } else {
+            setTimeout(() => {
+                this.dismissToast(toast);
+            }, 2500);
+        }
+    },
+
+    dismissToast(toast) {
+        toast.style.animation = 'toast-slide-down 400ms ease forwards';
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 400);
     }
 };
