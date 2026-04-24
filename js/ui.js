@@ -39,8 +39,11 @@ const UI = {
         this.renderDashboard();
         
         const splash = document.getElementById('splash-screen');
+        const app = document.getElementById('app');
+        
+        if (app) app.style.display = 'none';
+        
         if (splash) {
-            const app = document.querySelector('.app-container');
             setTimeout(() => {
                 splash.style.transition = 'opacity 0.8s ease';
                 splash.style.opacity = '0';
