@@ -4,12 +4,12 @@ const STORAGE_KEY_COMPLETIONS = 'forge_completions';
 const STORAGE_KEY_SETTINGS = 'forge_settings';
 
 const defaultHabits = [
-    { id: '1', name: 'Gym / Workout', emoji: '🏋️', category: 'FITNESS', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
-    { id: '2', name: 'Read for 20-30 mins', emoji: '📚', category: 'MIND', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
-    { id: '3', name: 'Learn a new skill (30 mins)', emoji: '🧠', category: 'GROWTH', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
-    { id: '4', name: 'Social Media < 30 mins', emoji: '📵', category: 'DIGITAL DETOX', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
-    { id: '5', name: 'Drink 3 Litres of Water', emoji: '💧', category: 'HEALTH', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
-    { id: '6', name: 'Sleep by 11 PM', emoji: '😴', category: 'RECOVERY', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() }
+    { id: '1', name: 'Gym / Workout', emoji: '🏋️', category: 'FITNESS', isDefault: true, frequency: 'daily', streak: 0, completions: {}, createdAt: new Date().toISOString() },
+    { id: '2', name: 'Read for 20-30 mins', emoji: '📚', category: 'MIND', isDefault: true, frequency: 'daily', streak: 0, completions: {}, createdAt: new Date().toISOString() },
+    { id: '3', name: 'Learn a new skill (30 mins)', emoji: '🧠', category: 'GROWTH', isDefault: true, frequency: 'daily', streak: 0, completions: {}, createdAt: new Date().toISOString() },
+    { id: '4', name: 'Social Media < 30 mins', emoji: '📵', category: 'DIGITAL DETOX', isDefault: true, frequency: 'daily', streak: 0, completions: {}, createdAt: new Date().toISOString() },
+    { id: '5', name: 'Drink 3 Litres of Water', emoji: '💧', category: 'HEALTH', isDefault: true, frequency: 'daily', streak: 0, completions: {}, createdAt: new Date().toISOString() },
+    { id: '6', name: 'Sleep by 11 PM', emoji: '😴', category: 'RECOVERY', isDefault: true, frequency: 'daily', streak: 0, completions: {}, createdAt: new Date().toISOString() }
 ];
 
 const defaultSettings = {
