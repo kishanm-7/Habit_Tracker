@@ -125,15 +125,15 @@ const UI = {
                                 }
                             ]
                         });
-                        this.showToast("Notifications enabled successfully!");
+                        alert("Notifications enabled successfully!");
                     } else {
                         this.updateNotifStatus();
-                        this.showToast("Notification permission denied!", "warning");
+                        alert("Notification permission denied!");
                     }
                 } else {
                     // Fallback to Web API for Vercel
                     if (!("Notification" in window)) {
-                        this.showToast("This browser does not support notifications.", "warning");
+                        alert("This browser does not support notifications.");
                         return;
                     }
                     Notification.requestPermission().then((permission) => {
@@ -145,7 +145,7 @@ const UI = {
                                     time: document.getElementById('reminder-time').value || '09:00'
                                 });
                             }
-                            this.showToast("Notifications enabled successfully!");
+                            alert("Notifications enabled successfully!");
                         }
                     });
                 }
@@ -169,7 +169,7 @@ const UI = {
                             ]
                         });
                     } else {
-                        this.showToast("Please enable notifications first.", "warning");
+                        alert("Please enable notifications first.");
                     }
                 } else {
                     // Fallback to Web API for Vercel
@@ -187,7 +187,7 @@ const UI = {
                             });
                         }
                     } else {
-                        this.showToast("Please enable notifications first.", "warning");
+                        alert("Please enable notifications first.");
                     }
                 }
             });
@@ -233,7 +233,6 @@ const UI = {
             this.renderDashboard();
             this.renderStats();
             this.renderSettings();
-            this.showToast(habitId ? 'Habit updated' : 'Habit saved');
         });
 
         // Initialize Add Default
@@ -251,7 +250,6 @@ const UI = {
                 Store.deleteHabit(this.currentDeleteId);
                 this.closeModal(this.modalDelete);
                 this.currentDeleteId = null;
-                this.showToast('Habit deleted');
                 this.renderDashboard();
                 this.renderStats();
             }
@@ -342,10 +340,9 @@ const UI = {
         });
 
         this.btnResetData.addEventListener('click', () => {
-            this.showToast("Wipe all habits and settings?", "warning", () => {
+            if(confirm("Are you sure? This will wipe all habits, streaks, and settings.")) {
                 Store.clearAllData();
-                this.showToast("Data wiped");
-            });
+            }
         });
 
         // Settings Dropdown/Action Routing Context
@@ -876,61 +873,6 @@ const UI = {
         document.getElementById('export-json-content').value = jsonStr;
         document.getElementById('modal-backdrop').classList.add('active');
         exportModal.classList.add('active');
-    }
-
-    showToast(message, type = 'success', onConfirm = null) {
-        // Remove existing toasts
-        const existingToasts = document.querySelectorAll('.toast');
-        existingToasts.forEach(t => t.remove());
-
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        
-        const icon = document.createElement('span');
-        icon.className = 'toast-icon';
-        // Use green checkmark for success, warning sign for others
-        icon.textContent = type === 'success' ? '✅' : '⚠️';
-        
-        const text = document.createElement('span');
-        text.textContent = message;
-        
-        toast.appendChild(icon);
-        toast.appendChild(text);
-        
-        if (onConfirm) {
-            const btnGroup = document.createElement('div');
-            btnGroup.className = 'toast-confirm-btns';
-            
-            const cancelBtn = document.createElement('button');
-            cancelBtn.className = 'toast-btn';
-            cancelBtn.textContent = 'No';
-            cancelBtn.onclick = () => {
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 400);
-            };
-            
-            const confirmBtn = document.createElement('button');
-            confirmBtn.className = 'toast-btn confirm';
-            confirmBtn.textContent = 'Yes';
-            confirmBtn.onclick = () => {
-                onConfirm();
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 400);
-            };
-            
-            btnGroup.appendChild(cancelBtn);
-            btnGroup.appendChild(confirmBtn);
-            toast.appendChild(btnGroup);
-        }
-        
-        document.body.appendChild(toast);
-        
-        if (!onConfirm) {
-            setTimeout(() => {
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 400);
-            }, 2500);
-        }
     }
 
 };

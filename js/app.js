@@ -20,7 +20,6 @@ const initApp = () => {
             settings.reminderTime = e.target.value;
             Store.setSettings(settings);
             localStorage.setItem('reminderTime', e.target.value);
-            UI.showToast('Reminder time saved');
             
             // Sync with Service Worker
             if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
