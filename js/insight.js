@@ -69,7 +69,7 @@ async function loadDailyInsight() {
       localStorage.getItem(countKey) || '0'
     );
     if (count >= 3) {
-      alert('Max 3 refreshes per day');
+      UI.showToast('Max 3 refreshes per day', 'warning');
       return;
     }
     localStorage.removeItem(cacheKey);
