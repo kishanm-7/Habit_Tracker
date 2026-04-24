@@ -40,10 +40,15 @@ const UI = {
         
         const splash = document.getElementById('splash-screen');
         if (splash) {
+            const app = document.querySelector('.app-container');
             setTimeout(() => {
-                splash.classList.add('fade-out');
-                setTimeout(() => splash.remove(), 800);
-            }, 6200);
+                splash.style.transition = 'opacity 0.8s ease';
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    if (app) app.style.display = 'block';
+                }, 800);
+            }, 4000);
         }
     },
 
