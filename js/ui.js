@@ -36,6 +36,7 @@ const UI = {
     init() {
         this.cacheDOM();
         this.bindEvents();
+        if (window.AI) AI.init();
         this.renderDashboard();
         
         const splash = document.getElementById('splash-screen');
@@ -610,6 +611,8 @@ const UI = {
 
         this.updateProgressRing(completedCount, habits.length);
         this.renderMiniHeatmap(habits);
+        
+        if (window.AI) AI.renderInsight();
     },
 
     renderMiniHeatmap(habits) {

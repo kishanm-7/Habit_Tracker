@@ -100,6 +100,16 @@
                     <p id="daily-quote">"We are what we repeatedly do. Excellence, then, is not an act, but a habit."</p>
                 </div>
 
+                <div id="ai-insight-card" class="insight-card anim-enter delay-300">
+                    <div class="insight-header">
+                        <span class="insight-label">✨ DAILY INSIGHT</span>
+                        <button id="btn-refresh-insight" class="btn-icon insight-refresh" title="Refresh Insight">↻</button>
+                    </div>
+                    <div id="insight-content" class="insight-content">
+                        <!-- Content or skeleton loader injected here -->
+                    </div>
+                </div>
+
                 <div class="habits-section">
                     <div class="section-header">
                         <h2>Your Routine</h2>
@@ -324,6 +334,7 @@
 
     <!-- Scripts -->
     <script src="./js/store.js"></script>
+    <script src="./js/ai.js"></script>
     <script src="./js/ui.js"></script>
     <script src="./js/timer.js"></script>
     <script src="./js/app.js"></script>

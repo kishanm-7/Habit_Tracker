@@ -1490,6 +1490,75 @@ input:checked + .slider:before {
     to { width: 100%; }
 }
 
+/* AI Daily Insight Card */
+.insight-card {
+    background: #1A1A1E;
+    border-left: 3px solid #F5A623;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.insight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.insight-label {
+    font-size: 11px;
+    color: #F5A623;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.insight-refresh {
+    font-size: 14px;
+    color: var(--text-muted);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.insight-refresh:hover {
+    color: #F5A623;
+    transform: rotate(180deg);
+}
+
+.insight-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-main);
+}
+
+.skeleton-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.skeleton-line {
+    height: 12px;
+    background: #2C2C35;
+    border-radius: 6px;
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-line:nth-child(1) { width: 100%; }
+.skeleton-line:nth-child(2) { width: 90%; }
+.skeleton-line:nth-child(3) { width: 70%; }
+
+@keyframes skeletonPulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.4; }
+}
+
 /* Splash Screen Mobile Responsiveness */
 @media (max-width: 768px) {
     .forge-text-container {
