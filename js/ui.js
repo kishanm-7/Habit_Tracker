@@ -39,21 +39,6 @@ const UI = {
         if (window.AI) AI.init();
         this.renderDashboard();
         
-        const splash = document.getElementById('splash-screen');
-        const app = document.getElementById('app');
-        
-        if (app) app.style.display = 'none';
-        
-        if (splash) {
-            setTimeout(() => {
-                splash.style.transition = 'opacity 0.8s ease';
-                splash.style.opacity = '0';
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                    if (app) app.style.display = 'block';
-                }, 800);
-            }, 5000);
-        }
     },
 
     cacheDOM() {

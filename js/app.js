@@ -91,3 +91,18 @@ if (document.readyState === 'loading') {
 } else {
     initApp();
 }
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var splash = document.getElementById('splash-screen');
+    var app = document.getElementById('app');
+    if (splash) {
+      splash.style.transition = 'opacity 0.8s ease';
+      splash.style.opacity = '0';
+      setTimeout(function() {
+        splash.style.display = 'none';
+        if (app) app.style.display = 'block';
+      }, 800);
+    }
+  }, 3500);
+});
