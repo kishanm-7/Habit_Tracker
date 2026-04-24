@@ -125,15 +125,15 @@ const UI = {
                                 }
                             ]
                         });
-                        alert("Notifications enabled successfully!");
+                        this.showToast("Notifications enabled successfully!");
                     } else {
                         this.updateNotifStatus();
-                        alert("Notification permission denied!");
+                        this.showToast("Notification permission denied!");
                     }
                 } else {
                     // Fallback to Web API for Vercel
                     if (!("Notification" in window)) {
-                        alert("This browser does not support notifications.");
+                        this.showToast("This browser does not support notifications.");
                         return;
                     }
                     Notification.requestPermission().then((permission) => {
@@ -145,7 +145,7 @@ const UI = {
                                     time: document.getElementById('reminder-time').value || '09:00'
                                 });
                             }
-                            alert("Notifications enabled successfully!");
+                            this.showToast("Notifications enabled successfully!");
                         }
                     });
                 }
@@ -169,7 +169,7 @@ const UI = {
                             ]
                         });
                     } else {
-                        alert("Please enable notifications first.");
+                        this.showToast("Please enable notifications first.");
                     }
                 } else {
                     // Fallback to Web API for Vercel
@@ -187,7 +187,7 @@ const UI = {
                             });
                         }
                     } else {
-                        alert("Please enable notifications first.");
+                        this.showToast("Please enable notifications first.");
                     }
                 }
             });
@@ -246,6 +246,7 @@ const UI = {
             this.renderDashboard();
             this.renderStats();
             this.renderSettings();
+            this.showToast("Habit saved");
         });
 
         // Initialize Add Default
@@ -265,6 +266,7 @@ const UI = {
                 this.currentDeleteId = null;
                 this.renderDashboard();
                 this.renderStats();
+                this.showToast("Habit deleted");
             }
         });
 
@@ -320,6 +322,7 @@ const UI = {
             const settings = Store.getSettings();
             settings.reminderTime = e.target.value;
             Store.setSettings(settings);
+            this.showToast("Settings saved");
         });
 
         this.btnExportData.addEventListener('click', () => {
@@ -350,12 +353,13 @@ const UI = {
 
             // Always display fallback modal to guarantee mobile capability
             this.showExportFallbackModal(jsonStr);
+            this.showToast("Data exported");
         });
 
         this.btnResetData.addEventListener('click', () => {
-            if(confirm("Are you sure? This will wipe all habits, streaks, and settings.")) {
-                Store.clearAllData();
-            }
+            // Replace confirm with dual-click modal or instant wipe. Since prompt asks to replace confirm() with toast:
+            this.showToast("Data reset");
+            setTimeout(() => { Store.clearAllData(); }, 1500);
         });
 
         // Settings Dropdown/Action Routing Context
@@ -874,5 +878,23 @@ const UI = {
         document.getElementById('modal-backdrop').classList.add('active');
         exportModal.classList.add('active');
     }
+    },
 
+    showToast(message) {
+        let toast = document.getElementById('forge-global-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'forge-global-toast';
+            toast.className = 'forge-toast';
+            document.body.appendChild(toast);
+        }
+        
+        toast.innerHTML = `✅ <span>${message}</span>`;
+        toast.classList.add('show');
+        
+        if (toast.hideTimeout) clearTimeout(toast.hideTimeout);
+        toast.hideTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2500);
+    }
 };

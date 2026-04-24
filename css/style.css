@@ -1495,3 +1495,33 @@ input:checked + .slider:before {
     text-decoration: none;
     margin-right: -6px; /* Offset to center correctly due to letter-spacing */
 }
+
+/* Custom Toast Notification */
+.forge-toast {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1A1A1E;
+    border: 1px solid #F5A623;
+    border-radius: 12px;
+    padding: 16px 24px;
+    color: #F0EDE8;
+    font-family: 'Syne', serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    z-index: 9999;
+    box-shadow: 0 0 20px rgba(245, 166, 35, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: bottom 0.3s ease, opacity 0.4s ease;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.forge-toast.show {
+    bottom: 100px;
+    opacity: 1;
+}

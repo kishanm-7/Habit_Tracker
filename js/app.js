@@ -36,6 +36,7 @@ const initApp = () => {
         tsInput.addEventListener('change', (e) => {
             settings.soundEnabled = e.target.checked;
             Store.setSettings(settings);
+            UI.showToast("Settings saved");
         });
     }
 
