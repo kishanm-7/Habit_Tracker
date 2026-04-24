@@ -87,14 +87,15 @@ const initApp = () => {
     checkNotificationTime();
 };
 
-const bootSequence = () => {
+window.onload = function() {
     initApp();
-
+    const splash = document.getElementById('splash-screen');
+    
     setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
         if (splash) {
+            splash.style.transition = 'opacity 0.8s ease';
             splash.style.opacity = '0';
-            splash.style.transition = 'opacity 0.5s ease';
+            
             setTimeout(() => {
                 splash.style.display = 'none';
                 splash.remove();
@@ -108,22 +109,7 @@ const bootSequence = () => {
                     const mainApp = document.getElementById('main-app-container') || document.getElementById('app');
                     if(mainApp) mainApp.style.display = 'block';
                 }
-            }, 500);
-        } else {
-            if (!localStorage.getItem('onboardingComplete')) {
-                const ob = document.getElementById('onboarding-flow');
-                if(ob) ob.style.display = 'flex';
-                if(window.UI && window.UI.initOnboarding) UI.initOnboarding();
-            } else {
-                const mainApp = document.getElementById('main-app-container') || document.getElementById('app');
-                if(mainApp) mainApp.style.display = 'block';
-            }
+            }, 800);
         }
-    }, 5000);
+    }, 2500);
 };
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bootSequence);
-} else {
-    bootSequence();
-}
