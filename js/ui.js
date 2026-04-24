@@ -51,7 +51,7 @@ const UI = {
                     splash.style.display = 'none';
                     if (app) app.style.display = 'block';
                 }, 800);
-            }, 4000);
+            }, 5000);
         }
     },
 
