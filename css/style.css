@@ -1390,14 +1390,19 @@ input:checked + .slider:before {
 
 .splash-forge-title {
     font-family: 'Syne', Georgia, serif;
-    font-size: 64px;
-    font-weight: 800;
+    font-size: clamp(32px, 10vw, 52px);
+    font-weight: 700;
     color: #F5A623;
-    letter-spacing: 16px;
+    letter-spacing: clamp(6px, 3vw, 12px);
     margin: 0;
     padding: 0;
     display: flex;
     gap: 4px;
+    white-space: nowrap;
+    text-align: center;
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .letter {

@@ -1,3 +1,20 @@
+// Guaranteed habit seeding — runs before anything else
+function initializeHabits() {
+    const existing = localStorage.getItem('forge_habits');
+    if (!existing || JSON.parse(existing).length === 0) {
+        const defaults = [
+            { id: '1', name: 'Gym / Workout', emoji: '🏋️', category: 'FITNESS', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
+            { id: '2', name: 'Read for 20-30 mins', emoji: '📚', category: 'MIND', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
+            { id: '3', name: 'Learn a new skill (30 mins)', emoji: '🧠', category: 'GROWTH', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
+            { id: '4', name: 'Social Media < 30 mins', emoji: '📵', category: 'DIGITAL DETOX', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
+            { id: '5', name: 'Drink 3 Litres of Water', emoji: '💧', category: 'HEALTH', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() },
+            { id: '6', name: 'Sleep by 11 PM', emoji: '😴', category: 'RECOVERY', isDefault: true, streak: 0, completions: {}, frequency: 'daily', createdAt: new Date().toISOString() }
+        ];
+        localStorage.setItem('forge_habits', JSON.stringify(defaults));
+    }
+}
+initializeHabits();
+
 const initApp = () => {
     // Recalculate streaks before rendering to ensure accurate display
     Store.recalculateStreaks();
