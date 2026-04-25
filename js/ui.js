@@ -598,6 +598,24 @@ const UI = {
             const tagClass = this.getTagClass(habit.category);
             const delay = 380 + (index * 80);
 
+            const categoryColors = {
+                'FITNESS': '#F5A623',
+                'MIND': '#4A90D9',
+                'GROWTH': '#7B68EE',
+                'DIGITAL DETOX': '#E74C3C',
+                'HEALTH': '#2ECC71',
+                'RECOVERY': '#9B59B6'
+            };
+            
+            const catKey = habit.category.toUpperCase();
+            const catColor = categoryColors[catKey] || '#F5A623';
+            
+            const dynamicStyle = `
+                border-left: 3px solid ${catColor};
+                background: linear-gradient(to right, ${catColor}15 0%, ${catColor}05 30%, transparent 60%), #1A1A1E;
+                animation-delay: ${delay}ms;
+            `;
+
             const isCustom = !['1','2','3','4','5','6'].includes(habit.id.toString());
             let menuHtml = '';
             if (isCustom) {
@@ -617,7 +635,7 @@ const UI = {
             }
 
             const html = `
-                <div class="habit-card cat-${tagClass} ${isCompleted ? 'completed' : ''} anim-enter" style="animation-delay: ${delay}ms" data-id="${habit.id}">
+                <div class="habit-card cat-${tagClass} ${isCompleted ? 'completed' : ''} anim-enter" style="${dynamicStyle}" data-id="${habit.id}" data-category="${catKey}">
                     <div class="habit-icon">${habit.emoji}</div>
                     <div class="habit-details">
                         <div class="habit-name">${habit.name}</div>
@@ -630,7 +648,9 @@ const UI = {
                         </div>
                     </div>
                     <button class="btn-check" aria-label="Mark completed">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline class="checkmark" points="20 6 9 17 4 12"></polyline>
+                        </svg>
                     </button>
                     ${menuHtml}
                 </div>
@@ -710,8 +730,7 @@ const UI = {
 
         if (isNowCompleted) {
             // Add animations
-            cardNode.classList.add('completed', 'anim-glow');
-            setTimeout(() => cardNode.classList.remove('anim-glow'), 500);
+            cardNode.classList.add('completed');
             this.spawnConfetti(btnNode);
             
             // Check Milestones

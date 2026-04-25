@@ -582,22 +582,19 @@ input:focus, select:focus {
 .cat-work { --cat-color: var(--cat-work); }
 
 .habit-card {
-    background: linear-gradient(90deg, color-mix(in srgb, var(--cat-color, var(--accent-primary)) 10%, transparent) 0%, transparent 30%), var(--bg-card);
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-left: 3px solid var(--cat-color, var(--border-color));
     border-radius: var(--radius-md);
     padding: var(--space-2);
     display: flex;
     align-items: center;
-    transition: all var(--transition-fast);
+    transition: all 0.2s ease;
     position: relative;
-    /* overflow: hidden removed to allow dropdown-menu rendering */
 }
 
 .habit-card:hover {
     transform: translateY(-3px);
-    border-color: color-mix(in srgb, var(--cat-color, var(--accent-primary)) 50%, var(--border-color));
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 0 0 1px color-mix(in srgb, var(--cat-color, var(--accent-primary)) 15%, transparent);
+    transition: all 0.2s ease;
 }
 
 .habit-icon {
@@ -614,12 +611,17 @@ input:focus, select:focus {
 
 .habit-details {
     flex: 1;
+    min-width: 0; /* Ensure truncation works */
 }
 
 .habit-name {
-    font-size: 1.1rem;
+    font-size: 15px;
     font-weight: 500;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
 }
 
 .habit-meta {
@@ -639,12 +641,12 @@ input:focus, select:focus {
     font-size: 0.65rem;
 }
 
-.tag.health { color: #27AE60; background: rgba(39, 174, 96, 0.1); }
-.tag.mind { color: #9B59B6; background: rgba(155, 89, 182, 0.1); }
-.tag.growth { color: #2980B9; background: rgba(41, 128, 185, 0.1); }
-.tag.fitness { color: #E74C3C; background: rgba(231, 76, 60, 0.1); }
-.tag.detox { color: #7F8C8D; background: rgba(127, 140, 141, 0.1); }
-.tag.recovery { color: #34495E; background: rgba(52, 73, 94, 0.1); }
+.tag.health { color: #2ECC71; background: rgba(46, 204, 113, 0.1); }
+.tag.mind { color: #4A90D9; background: rgba(74, 144, 217, 0.1); }
+.tag.growth { color: #7B68EE; background: rgba(123, 104, 238, 0.1); }
+.tag.fitness { color: #F5A623; background: rgba(245, 166, 35, 0.1); }
+.tag.detox { color: #E74C3C; background: rgba(231, 76, 60, 0.1); }
+.tag.recovery { color: #9B59B6; background: rgba(155, 89, 182, 0.1); }
 
 .habit-streak {
     display: flex;
@@ -653,7 +655,6 @@ input:focus, select:focus {
     color: var(--accent-primary);
 }
 
-/* History Bar (7 days) */
 .history-bar {
     display: flex;
     gap: 4px;
@@ -668,14 +669,9 @@ input:focus, select:focus {
     transition: background var(--transition-fast);
 }
 
-.history-node.done {
-    background: var(--status-success);
-}
-.history-node.missed {
-    background: var(--status-danger);
-}
+.history-node.done { background: var(--status-success); }
+.history-node.missed { background: var(--status-danger); }
 
-/* Check Button */
 .btn-check {
     width: 32px;
     height: 32px;
@@ -684,7 +680,8 @@ input:focus, select:focus {
     margin-left: var(--space-2);
     position: relative;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all 0.3s ease;
+    background: transparent;
     flex-shrink: 0;
 }
 
@@ -697,34 +694,38 @@ input:focus, select:focus {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
-    color: var(--bg-base);
-    transition: transform 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Completed State */
-.habit-card.completed {
-    border-color: var(--accent-primary);
-    opacity: 0.9;
-}
-
-.habit-card.completed .btn-check {
-    background: var(--accent-primary);
-    border-color: var(--accent-primary);
-}
-
-.habit-card.completed .btn-check svg {
-    transform: translate(-50%, -50%) scale(1);
-    color: var(--bg-base);
-}
-
-.habit-card.completed .btn-check svg polyline {
-    stroke-dasharray: 24;
-    stroke-dashoffset: 24;
-    animation: drawCheck 0.3s ease-out forwards;
+.checkmark {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: drawCheck 0.4s ease forwards;
 }
 
 @keyframes drawCheck {
     to { stroke-dashoffset: 0; }
+}
+
+.habit-card.completed {
+    border-left-color: #F5A623 !important;
+    animation: cardGlow 0.6s ease;
+}
+
+.habit-card.completed .btn-check {
+    background: #F5A623;
+    border-color: #F5A623;
+}
+
+.habit-card.completed .btn-check svg {
+    transform: translate(-50%, -50%) scale(1);
+    color: #FFF;
+}
+
+@keyframes cardGlow {
+    0% { box-shadow: 0 0 0 rgba(245,166,35,0); }
+    50% { box-shadow: 0 0 20px rgba(245,166,35,0.4); }
+    100% { box-shadow: 0 0 0 rgba(245,166,35,0); }
 }
 
 /* Card Menu Dropdown */
