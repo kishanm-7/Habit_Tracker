@@ -648,8 +648,14 @@ const UI = {
                         </div>
                     </div>
                     <button class="btn-check" aria-label="Mark completed">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline class="checkmark" points="20 6 9 17 4 12"></polyline>
+                        <svg viewBox="0 0 24 24" width="14" height="14">
+                            <polyline points="4,12 9,17 20,7"
+                                fill="none"
+                                stroke="white"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="checkmark-path"/>
                         </svg>
                     </button>
                     ${menuHtml}
@@ -744,9 +750,22 @@ const UI = {
             cardNode.classList.remove('completed');
         }
         
-        // Re-render dashboard partly
-        this.renderDashboard(); 
-        // We re-render entirely to update ring and streaks easily. In production, partial DOM update is better.
+        // Manual DOM updates to prevent re-render flicker
+        // 1. Update Streak Text
+        const streakElem = cardNode.querySelector('.habit-streak');
+        if (streakElem) streakElem.textContent = `🔥 ${streakAfter}`;
+        
+        // 2. Update History Bar
+        const historyBar = cardNode.querySelector('.history-bar');
+        if (historyBar) historyBar.innerHTML = this.generateHistoryHtml(id);
+        
+        // 3. Update Progress Ring
+        const allHabits = Store.getHabits();
+        const completedCount = allHabits.filter(h => Store.isCompleted(h.id, todayStr)).length;
+        this.updateProgressRing(completedCount, allHabits.length);
+        
+        // 4. Update Overall Streak
+        if (this.globalStreak) this.globalStreak.textContent = Store.getOverallStreak();
     },
 
     triggerCelebration(days) {
