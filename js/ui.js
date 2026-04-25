@@ -32,6 +32,41 @@ const quotes = [
     "A journey of a thousand miles begins with a single step."
 ];
 
+function showToast(message, type = 'success') {
+  const existing = document.getElementById('forge-toast');
+  if (existing) existing.remove();
+  
+  const toast = document.createElement('div');
+  toast.id = 'forge-toast';
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1A1A1E;
+    border: 1px solid #F5A623;
+    border-radius: 12px;
+    padding: 14px 24px;
+    color: #F0EDE8;
+    font-size: 13px;
+    letter-spacing: 1px;
+    z-index: 99999;
+    box-shadow: 0 0 20px rgba(245, 166, 35, 0.15);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    text-align: center;
+    white-space: nowrap;
+  `;
+  toast.innerHTML = '✅ ' + message;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => toast.style.opacity = '1', 10);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
 const UI = {
     init() {
         this.cacheDOM();
@@ -125,15 +160,15 @@ const UI = {
                                 }
                             ]
                         });
-                        alert("Notifications enabled successfully!");
+                        showToast("Notifications enabled successfully!");
                     } else {
                         this.updateNotifStatus();
-                        alert("Notification permission denied!");
+                        showToast("Notification permission denied!");
                     }
                 } else {
                     // Fallback to Web API for Vercel
                     if (!("Notification" in window)) {
-                        alert("This browser does not support notifications.");
+                        showToast("This browser does not support notifications.");
                         return;
                     }
                     Notification.requestPermission().then((permission) => {
@@ -145,7 +180,7 @@ const UI = {
                                     time: document.getElementById('reminder-time').value || '09:00'
                                 });
                             }
-                            alert("Notifications enabled successfully!");
+                            showToast("Notifications enabled successfully!");
                         }
                     });
                 }
@@ -169,7 +204,7 @@ const UI = {
                             ]
                         });
                     } else {
-                        alert("Please enable notifications first.");
+                        showToast("Please enable notifications first.");
                     }
                 } else {
                     // Fallback to Web API for Vercel
@@ -187,7 +222,7 @@ const UI = {
                             });
                         }
                     } else {
-                        alert("Please enable notifications first.");
+                        showToast("Please enable notifications first.");
                     }
                 }
             });
