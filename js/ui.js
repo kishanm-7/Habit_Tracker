@@ -73,12 +73,19 @@ const UI = {
         this.bindEvents();
         this.renderDashboard();
         
+        // Splash Screen Transition Logic
         const splash = document.getElementById('splash-screen');
-        if (splash) {
+        const app = document.getElementById('app');
+        if (splash && app) {
             setTimeout(() => {
-                splash.classList.add('fade-out');
-                setTimeout(() => splash.remove(), 800);
-            }, 6200);
+                splash.style.transition = 'opacity 0.8s ease';
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    app.style.display = 'block';
+                    document.body.style.overflow = 'auto';
+                }, 800);
+            }, 5000);
         }
     },
 
